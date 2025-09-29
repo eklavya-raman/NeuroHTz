@@ -30,9 +30,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-+2_$w5t4q2rkx_%i$@_(4=*ek5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app', '.now.sh']
-if os.getenv('VERCEL_URL'):
-    ALLOWED_HOSTS.append(os.getenv('VERCEL_URL'))
+ALLOWED_HOSTS = ['https://neuro-htz.vercel.app']  # Allow all hosts for now to debug Vercel deployment
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app', '.now.sh']
+# if os.getenv('VERCEL_URL'):
+#     ALLOWED_HOSTS.append(os.getenv('VERCEL_URL'))
 
 
 # Application definition
