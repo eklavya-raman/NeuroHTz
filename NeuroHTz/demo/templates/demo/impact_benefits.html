@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Impact & Benefits - NeuroHTz</title>
+    <style>
+        :root{--bg: #0b1020;--text: #e6e9f2;--muted: #b7bfd6;--brand: #6dd6ff;--brand-2: #7a7dff;--ok: #35d0a8;--radius: 14px;}
+        * { box-sizing: border-box }
+        body { margin: 0; font-family: ui-sans-serif, system-ui; color: var(--text); background: var(--bg); line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin: 40px 0; }
+        .header h1 { font-size: 36px; margin: 0 0 10px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius); padding: 24px; }
+        .card h2 { color: var(--brand); margin: 0 0 16px; }
+        .stat-highlight { font-size: 48px; font-weight: 700; color: var(--brand); text-align: center; margin: 16px 0; }
+        .benefit-list { list-style: none; padding: 0; }
+        .benefit-list li { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; align-items: center; }
+        .benefit-list li::before { content: '✓'; color: var(--ok); font-weight: 700; margin-right: 12px; }
+        .btn { display: inline-flex; padding: 12px 24px; border-radius: 8px; background: var(--brand); color: #04111f; text-decoration: none; font-weight: 600; margin: 8px; }
+        .actions { text-align: center; margin: 40px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Impact & Benefits</h1>
+            <p style="color: var(--muted);">Revolutionary impact on neurological healthcare and early detection</p>
+        </div>
+        
+        <div class="impact-grid">
+            <div class="card">
+                <h2>Clinical Impact</h2>
+                <div class="stat-highlight">5-10 years</div>
+                <p style="text-align: center; color: var(--muted);">Earlier detection window</p>
+                <ul class="benefit-list">
+                    <li>Early identification of neurodegenerative diseases</li>
+                    <li>Improved treatment outcomes through early intervention</li>
+                    <li>Reduced healthcare costs via preventive care</li>
+                    <li>Enhanced quality of life for patients and families</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Healthcare System Benefits</h2>
+                <div class="stat-highlight">$50B+</div>
+                <p style="text-align: center; color: var(--muted);">Potential annual healthcare savings</p>
+                <ul class="benefit-list">
+                    <li>Reduced need for expensive neuroimaging</li>
+                    <li>Lower long-term care costs</li>
+                    <li>Improved resource allocation</li>
+                    <li>Better patient management strategies</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Accessibility & Coverage</h2>
+                <div class="stat-highlight">94%</div>
+                <p style="text-align: center; color: var(--muted);">Population coverage potential</p>
+                <ul class="benefit-list">
+                    <li>Portable technology for rural/remote areas</li>
+                    <li>Affordable compared to traditional methods</li>
+                    <li>Non-invasive and patient-friendly</li>
+                    <li>Rapid screening capabilities</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Research Advancement</h2>
+                <div class="stat-highlight">1000x</div>
+                <p style="text-align: center; color: var(--muted);">Increase in data collection capability</p>
+                <ul class="benefit-list">
+                    <li>Large-scale population studies</li>
+                    <li>Improved AI model training</li>
+                    <li>Better understanding of brain function</li>
+                    <li>Accelerated drug development</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 32px;">
+            <h2>Societal Impact</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div>
+                    <h3>Patient Benefits:</h3>
+                    <ul>
+                        <li>Peace of mind through regular screening</li>
+                        <li>Early intervention opportunity</li>
+                        <li>Reduced anxiety about cognitive decline</li>
+                        <li>Better family planning and preparation</li>
+                        <li>Maintained independence longer</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Healthcare Provider Benefits:</h3>
+                    <ul>
+                        <li>Objective screening tool</li>
+                        <li>Improved diagnostic confidence</li>
+                        <li>Better patient outcomes</li>
+                        <li>Reduced liability and uncertainty</li>
+                        <li>Enhanced clinical workflow</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Global Health Impact</h2>
+            <p>With over 55 million people worldwide living with dementia and numbers expected to triple by 2050, NeuroHTz addresses a critical global health challenge:</p>
+            <ul>
+                <li><strong>Early Detection:</strong> 5-10 year window before clinical symptoms</li>
+                <li><strong>Cost Reduction:</strong> $50+ billion potential annual savings globally</li>
+                <li><strong>Accessibility:</strong> Portable technology for underserved populations</li>
+                <li><strong>Research:</strong> Accelerated understanding of neurodegeneration</li>
+            </ul>
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'financial_projection' %}" class="btn">Financial Projections</a>
+            <a href="{% url 'patient_registration' %}" class="btn">Start Screening</a>
+            <a href="{% url 'index' %}" class="btn">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

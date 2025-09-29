@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>User Guidelines - NeuroHTz</title>
+    <style>
+        :root{
+            --bg: #0b1020;
+            --card: #121a35;
+            --text: #e6e9f2;
+            --muted: #b7bfd6;
+            --brand: #6dd6ff;
+            --brand-2: #7a7dff;
+            --ok: #35d0a8;
+            --warning: #ffd93d;
+            --error: #ff6b6b;
+            --shadow: 0 10px 30px rgba(0,0,0,.35);
+            --radius: 14px;
+        }
+        * { box-sizing: border-box }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 80% -10%, rgba(109,214,255,.08), transparent 60%),
+                        radial-gradient(900px 500px at 0% 0%, rgba(122,125,255,.10), transparent 60%), var(--bg);
+            line-height: 1.65;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin: 40px 0; }
+        .header h1 {
+            font-size: 36px; margin: 0 0 10px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .guideline-section {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10); border-radius: var(--radius);
+            padding: 32px; margin-bottom: 24px; box-shadow: var(--shadow);
+        }
+        .guideline-section h2 { margin: 0 0 20px; font-size: 24px; color: var(--brand); }
+        .guideline-section h3 { margin: 24px 0 12px; font-size: 18px; color: var(--text); }
+        .step-list { counter-reset: step-counter; list-style: none; padding: 0; }
+        .step-list li {
+            counter-increment: step-counter; margin: 16px 0; padding: 16px; position: relative;
+            background: rgba(255,255,255,.02); border-radius: 8px; border-left: 4px solid var(--brand);
+        }
+        .step-list li::before {
+            content: counter(step-counter); position: absolute; left: -15px; top: 12px;
+            background: var(--brand); color: #04111f; width: 30px; height: 30px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+        }
+        .warning-box {
+            background: rgba(255, 217, 61, 0.1); border: 1px solid rgba(255, 217, 61, 0.3);
+            border-radius: 8px; padding: 16px; margin: 16px 0;
+        }
+        .warning-box h4 { margin: 0 0 8px; color: var(--warning); }
+        .info-box {
+            background: rgba(109, 214, 255, 0.1); border: 1px solid rgba(109, 214, 255, 0.3);
+            border-radius: 8px; padding: 16px; margin: 16px 0;
+        }
+        .info-box h4 { margin: 0 0 8px; color: var(--brand); }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: .5rem; padding: 12px 24px; border-radius: 8px; font-weight: 600;
+            border: none; cursor: pointer; font-size: 16px; text-decoration: none; transition: all 0.2s;
+        }
+        .btn.primary { background: linear-gradient(90deg, var(--brand), var(--brand-2)); color: #04111f; }
+        .btn.secondary { background: rgba(255,255,255,.05); color: var(--text); border: 1px solid rgba(255,255,255,.12); }
+        .actions { text-align: center; margin: 40px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>User Guidelines</h1>
+            <p style="color: var(--muted);">Complete guide to using the NeuroHTz EEG screening system</p>
+        </div>
+        
+        <div class="guideline-section">
+            <h2>Pre-Test Preparation</h2>
+            <ol class="step-list">
+                <li>
+                    <strong>Patient Preparation:</strong>
+                    <p>Ensure patient is well-rested, has clean hair, and has avoided caffeine for 2 hours before testing. Remove any metal jewelry or accessories.</p>
+                </li>
+                <li>
+                    <strong>Environment Setup:</strong>
+                    <p>Choose a quiet, dimly lit room with minimal electrical interference. Temperature should be comfortable (20-24°C).</p>
+                </li>
+                <li>
+                    <strong>Equipment Check:</strong>
+                    <p>Verify all electrode connections, test audio output levels, and ensure stable power supply and network connectivity.</p>
+                </li>
+                <li>
+                    <strong>Patient Registration:</strong>
+                    <p>Complete patient demographics, medical history, and hearing assessment. Auto-generated patient ID will be assigned.</p>
+                </li>
+            </ol>
+            
+            <div class="warning-box">
+                <h4>⚠️ Important Safety Notes</h4>
+                <ul>
+                    <li>Always use medical-grade, sterilized electrodes</li>
+                    <li>Check for skin allergies before applying electrode gel</li>
+                    <li>Ensure proper grounding and electrical safety</li>
+                    <li>Have emergency procedures in place</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="guideline-section">
+            <h2>Electrode Placement (10-20 System)</h2>
+            <ol class="step-list">
+                <li>
+                    <strong>Scalp Preparation:</strong>
+                    <p>Clean electrode sites with alcohol prep pads and gently abrade skin to reduce impedance below 5 kΩ.</p>
+                </li>
+                <li>
+                    <strong>Reference Electrodes:</strong>
+                    <p>Place reference electrodes on earlobes (A1, A2) or mastoid processes. Ensure secure, low-impedance contact.</p>
+                </li>
+                <li>
+                    <strong>Active Electrodes:</strong>
+                    <p>Position electrodes according to 10-20 system: Fp1, Fp2, F3, F4, C3, C4, P3, P4, O1, O2, F7, F8, T3, T4, T5, T6, Fz, Cz, Pz.</p>
+                </li>
+                <li>
+                    <strong>Ground Electrode:</strong>
+                    <p>Place ground electrode on forehead (Fpz) for optimal noise reduction and signal stability.</p>
+                </li>
+            </ol>
+            
+            <div class="info-box">
+                <h4>💡 Pro Tips for Better Signal Quality</h4>
+                <ul>
+                    <li>Use conductive gel sparingly to prevent bridging</li>
+                    <li>Check impedances before starting - should be &lt;5kΩ</li>
+                    <li>Secure cables to prevent movement artifacts</li>
+                    <li>Test signal quality with eyes open/closed</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="guideline-section">
+            <h2>Test Execution</h2>
+            <ol class="step-list">
+                <li>
+                    <strong>Baseline Recording:</strong>
+                    <p>Record 2 minutes of resting EEG with eyes closed to establish baseline activity and verify signal quality.</p>
+                </li>
+                <li>
+                    <strong>40 Hz Stimulus Presentation:</strong>
+                    <p>Present 40 Hz auditory stimulus (click trains or amplitude-modulated tones) at 60-70 dB SPL for 5 minutes.</p>
+                </li>
+                <li>
+                    <strong>Real-time Monitoring:</strong>
+                    <p>Monitor signal quality indicators, watch for artifacts, and ensure patient remains alert and comfortable.</p>
+                </li>
+                <li>
+                    <strong>Test Completion:</strong>
+                    <p>Stop recording, save data automatically, and proceed to AI analysis. Total test time: 7-10 minutes.</p>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="guideline-section">
+            <h2>Result Interpretation</h2>
+            <h3>AI Analysis Output</h3>
+            <p>The system provides binary classification (Normal/Abnormal) with confidence scores:</p>
+            <ul style="margin: 16px 0; padding-left: 20px;">
+                <li><strong>Normal (&gt;80% confidence):</strong> Healthy 40 Hz response, continue routine monitoring</li>
+                <li><strong>Abnormal (&gt;80% confidence):</strong> Reduced 40 Hz response, refer to neurologist</li>
+                <li><strong>Inconclusive (&lt;80% confidence):</strong> Repeat test or consider additional assessments</li>
+            </ul>
+            
+            <h3>Key Metrics</h3>
+            <ul style="margin: 16px 0; padding-left: 20px;">
+                <li><strong>Power Spectrum 40Hz:</strong> Peak power at 40 Hz frequency</li>
+                <li><strong>Phase-Locking Index (PLI):</strong> Consistency of neural response timing</li>
+                <li><strong>Response Latency:</strong> Time delay from stimulus to neural response</li>
+                <li><strong>Signal Quality:</strong> Overall recording quality and artifact levels</li>
+            </ul>
+            
+            <div class="warning-box">
+                <h4>⚠️ Clinical Limitations</h4>
+                <p>This system is for screening purposes only and should not replace comprehensive neurological evaluation. Always consider clinical context and patient history when interpreting results.</p>
+            </div>
+        </div>
+        
+        <div class="guideline-section">
+            <h2>Troubleshooting</h2>
+            <h3>Common Issues and Solutions</h3>
+            <ul style="margin: 16px 0; padding-left: 20px;">
+                <li><strong>High impedance:</strong> Clean electrode sites, add more gel, check connections</li>
+                <li><strong>60 Hz noise:</strong> Check grounding, move away from electrical equipment</li>
+                <li><strong>Movement artifacts:</strong> Ensure patient comfort, secure electrodes and cables</li>
+                <li><strong>Poor 40 Hz response:</strong> Check audio levels, verify stimulus frequency</li>
+            </ul>
+            
+            <h3>Quality Control Checklist</h3>
+            <ul style="margin: 16px 0; padding-left: 20px;">
+                <li>✓ All electrode impedances &lt; 5 kΩ</li>
+                <li>✓ Stable baseline EEG visible</li>
+                <li>✓ 40 Hz stimulus clearly audible</li>
+                <li>✓ Patient alert and comfortable</li>
+                <li>✓ Minimal artifacts during recording</li>
+            </ul>
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'patient_registration' %}" class="btn primary">Start New Test</a>
+            <a href="{% url 'impact_benefits' %}" class="btn secondary">Impact & Benefits</a>
+            <a href="{% url 'index' %}" class="btn secondary">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Patient History - NeuroHTz</title>
+    <style>
+        :root{
+            --bg: #0b1020;
+            --bg-accent: #0f1730;
+            --card: #121a35;
+            --text: #e6e9f2;
+            --muted: #b7bfd6;
+            --brand: #6dd6ff;
+            --brand-2: #7a7dff;
+            --ok: #35d0a8;
+            --warning: #ffd93d;
+            --error: #ff6b6b;
+            --shadow: 0 10px 30px rgba(0,0,0,.35);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box }
+        html, body { height: 100% }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 80% -10%, rgba(109,214,255,.08), transparent 60%),
+                        radial-gradient(900px 500px at 0% 0%, rgba(122,125,255,.10), transparent 60%),
+                        var(--bg);
+            line-height: 1.55;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        
+        .header {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin: 0 0 10px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .patient-info {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .info-item h3 { margin: 0 0 8px; color: var(--brand); font-size: 14px; }
+        .info-item .value { font-size: 18px; font-weight: 600; }
+        
+        .test-history {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .test-item {
+            display: grid;
+            grid-template-columns: 1fr 120px 100px 150px;
+            gap: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            align-items: center;
+        }
+        
+        .test-item:last-child { border-bottom: none; }
+        
+        .test-date { font-weight: 600; }
+        .test-duration { color: var(--muted); font-size: 14px; }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status-badge.completed {
+            background: rgba(53, 208, 168, 0.2);
+            color: var(--ok);
+        }
+        
+        .status-badge.in_progress {
+            background: rgba(255, 217, 61, 0.2);
+            color: var(--warning);
+        }
+        
+        .status-badge.failed {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--error);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,.08);
+            transform: translateY(-1px);
+        }
+        
+        .btn.primary {
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            color: #04111f;
+            border: none;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        
+        .no-tests {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+        }
+        
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+        }
+        
+        .pagination .current {
+            background: var(--brand);
+            color: #04111f;
+            border-color: var(--brand);
+        }
+        
+        @media (max-width: 768px) {
+            .patient-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .test-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Patient Test History</h1>
+            <p style="color: var(--muted);">Complete testing history for {{ patient.name }}</p>
+        </div>
+        
+        <div class="patient-info">
+            <div class="info-item">
+                <h3>Patient ID</h3>
+                <div class="value">{{ patient.patient_id }}</div>
+            </div>
+            <div class="info-item">
+                <h3>Age</h3>
+                <div class="value">{{ patient.age }}</div>
+            </div>
+            <div class="info-item">
+                <h3>Gender</h3>
+                <div class="value">{{ patient.get_gender_display }}</div>
+            </div>
+            <div class="info-item">
+                <h3>Registered</h3>
+                <div class="value">{{ patient.created_at|date:"M Y" }}</div>
+            </div>
+        </div>
+        
+        <div class="test-history">
+            <h2 style="margin: 0 0 24px; color: var(--brand);">Test History</h2>
+            
+            {% if page_obj %}
+                {% for session in page_obj %}
+                <div class="test-item">
+                    <div>
+                        <div class="test-date">{{ session.test_date|date:"M d, Y" }}</div>
+                        <div class="test-duration">{{ session.test_date|time:"H:i" }} - {{ session.duration_seconds|default:"N/A" }}s</div>
+                    </div>
+                    <div class="status-badge {{ session.status }}">
+                        {{ session.get_status_display }}
+                    </div>
+                    <div style="color: var(--muted); font-size: 14px;">
+                        {{ session.signal_quality|capfirst }}
+                    </div>
+                    <div>
+                        {% if session.status == 'completed' %}
+                            <a href="#" class="btn">View Results</a>
+                        {% else %}
+                            <span style="color: var(--muted); font-size: 14px;">No results</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if page_obj.has_other_pages %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    
+                    <span class="current">{{ page_obj.number }}</span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+            {% else %}
+                <div class="no-tests">
+                    <h3>No test history available</h3>
+                    <p>This patient has not completed any tests yet.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'test_dashboard' patient.patient_id %}" class="btn primary">New Test</a>
+            <a href="{% url 'reports_list' %}" class="btn">All Reports</a>
+            <a href="{% url 'index' %}" class="btn">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

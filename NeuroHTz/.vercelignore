@@ -1,0 +1,14 @@
+# Vercel ignore file
+*.pyc
+__pycache__/
+.env
+.git/
+.DS_Store
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+venv/
+env/
+staticfiles_build/

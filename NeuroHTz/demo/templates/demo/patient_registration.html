@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Patient Registration - NeuroHTz</title>
+    <style>
+        :root{
+            --bg: #0b1020;
+            --bg-accent: #0f1730;
+            --card: #121a35;
+            --text: #e6e9f2;
+            --muted: #b7bfd6;
+            --brand: #6dd6ff;
+            --brand-2: #7a7dff;
+            --ok: #35d0a8;
+            --error: #ff6b6b;
+            --shadow: 0 10px 30px rgba(0,0,0,.35);
+            --radius: 14px;
+            --maxw: 800px;
+        }
+
+        * { box-sizing: border-box }
+        html, body { height: 100% }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 80% -10%, rgba(109,214,255,.08), transparent 60%),
+                        radial-gradient(900px 500px at 0% 0%, rgba(122,125,255,.10), transparent 60%),
+                        var(--bg);
+            line-height: 1.55;
+        }
+
+        .container { max-width: var(--maxw); margin-inline: auto; padding: 20px; }
+        
+        .header {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin: 0 0 10px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-card {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(109,214,255,.15);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .btn.primary {
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            color: #04111f;
+            box-shadow: 0 10px 24px rgba(109,214,255,.25), inset 0 0 0 1px rgba(255,255,255,.25);
+        }
+        
+        .btn.primary:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+        
+        .btn.secondary {
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,.12);
+        }
+        
+        .btn.secondary:hover {
+            background: rgba(255,255,255,.08);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .patient-id-preview {
+            background: rgba(109,214,255,.1);
+            border: 1px solid rgba(109,214,255,.3);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: 16px;
+            text-align: center;
+        }
+        
+        .patient-id-preview strong {
+            color: var(--brand);
+        }
+        
+        .messages {
+            margin-bottom: 24px;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .alert.success {
+            background: rgba(53, 208, 168, 0.1);
+            border: 1px solid rgba(53, 208, 168, 0.3);
+            color: var(--ok);
+        }
+        
+        .alert.error {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: var(--error);
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Patient Registration</h1>
+            <p style="color: var(--muted);">Enter patient details to begin neurological screening</p>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="form-card">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="age">Age *</label>
+                        <input type="number" id="age" name="age" min="1" max="120" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">Gender *</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hearing_condition">Hearing Condition *</label>
+                    <select id="hearing_condition" name="hearing_condition" required>
+                        <option value="normal">Normal</option>
+                        <option value="mild_loss">Mild Hearing Loss</option>
+                        <option value="moderate_loss">Moderate Hearing Loss</option>
+                        <option value="severe_loss">Severe Hearing Loss</option>
+                        <option value="profound_loss">Profound Hearing Loss</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="risk_factors">Risk Factors (Optional)</label>
+                    <textarea id="risk_factors" name="risk_factors" rows="3" 
+                              placeholder="Enter any known risk factors separated by commas (e.g., family history, head trauma, etc.)"></textarea>
+                </div>
+                
+                <div class="patient-id-preview">
+                    <small style="color: var(--muted);">Patient ID will be auto-generated upon registration</small><br>
+                    <strong>Format: NH[8-character code]</strong>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Register Patient & Start Test</button>
+                    <a href="{% url 'index' %}" class="btn secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

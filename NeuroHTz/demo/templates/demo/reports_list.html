@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Reports & History - NeuroHTz</title>
+    <style>
+        :root{
+            --bg: #0b1020;
+            --bg-accent: #0f1730;
+            --card: #121a35;
+            --text: #e6e9f2;
+            --muted: #b7bfd6;
+            --brand: #6dd6ff;
+            --brand-2: #7a7dff;
+            --ok: #35d0a8;
+            --warning: #ffd93d;
+            --error: #ff6b6b;
+            --shadow: 0 10px 30px rgba(0,0,0,.35);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box }
+        html, body { height: 100% }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 80% -10%, rgba(109,214,255,.08), transparent 60%),
+                        radial-gradient(900px 500px at 0% 0%, rgba(122,125,255,.10), transparent 60%),
+                        var(--bg);
+            line-height: 1.55;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .header {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin: 0 0 10px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .search-bar {
+            max-width: 400px;
+            margin: 0 auto 32px;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            font-size: 16px;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(109,214,255,.15);
+        }
+        
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .report-card {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,.4);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .patient-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--brand);
+        }
+        
+        .patient-id {
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        .result-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .result-badge.normal {
+            background: rgba(53, 208, 168, 0.2);
+            color: var(--ok);
+        }
+        
+        .result-badge.abnormal {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--error);
+        }
+        
+        .result-badge.inconclusive {
+            background: rgba(255, 217, 61, 0.2);
+            color: var(--warning);
+        }
+        
+        .report-details {
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        .report-date {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .confidence-score {
+            margin: 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .confidence-score.high { color: var(--ok); }
+        .confidence-score.medium { color: var(--warning); }
+        .confidence-score.low { color: var(--error); }
+        
+        .report-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,.08);
+            transform: translateY(-1px);
+        }
+        
+        .btn.primary {
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            color: #04111f;
+            border: none;
+        }
+        
+        .btn.success {
+            background: var(--ok);
+            color: white;
+            border: none;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+        }
+        
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+        }
+        
+        .pagination .current {
+            background: var(--brand);
+            color: #04111f;
+            border-color: var(--brand);
+        }
+        
+        .no-reports {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+        
+        .back-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reports & History</h1>
+            <p style="color: var(--muted);">Downloadable PDF reports and secure data sharing</p>
+        </div>
+        
+        <div class="search-bar">
+            <form method="get">
+                <input type="text" name="search" placeholder="Search by patient name or ID..." 
+                       value="{{ search_query|default:'' }}">
+            </form>
+        </div>
+        
+        {% if page_obj %}
+            <div class="reports-grid">
+                {% for report in page_obj %}
+                <div class="report-card">
+                    <div class="report-header">
+                        <div>
+                            <div class="patient-name">{{ report.test_results.test_session.patient.name }}</div>
+                            <div class="patient-id">{{ report.test_results.test_session.patient.patient_id }}</div>
+                        </div>
+                        <div class="result-badge {{ report.test_results.result }}">
+                            {{ report.test_results.get_result_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="report-details">
+                        <div class="report-date">{{ report.test_results.test_session.test_date|date:"M d, Y" }}</div>
+                        <div>Test Duration: {{ report.test_results.test_session.duration_seconds|default:"300" }}s</div>
+                        <div>Generated: {{ report.generated_at|date:"M d, Y H:i" }}</div>
+                    </div>
+                    
+                    <div class="confidence-score {% if report.test_results.confidence_score >= 0.8 %}high{% elif report.test_results.confidence_score >= 0.6 %}medium{% else %}low{% endif %}">
+                        {{ report.test_results.confidence_score|floatformat:0 }}% Confidence
+                    </div>
+                    
+                    <div class="report-actions">
+                        <a href="#" class="btn primary">View Results</a>
+                        <a href="#" class="btn success">Download PDF</a>
+                        <a href="#" class="btn">Share</a>
+                    </div>
+                    
+                    {% if report.shared_with %}
+                    <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">
+                        Shared with: {{ report.shared_with|truncatechars:50 }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+                {% endif %}
+                
+                <span class="current">{{ page_obj.number }}</span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Last &raquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="no-reports">
+                <h3>No reports found</h3>
+                {% if search_query %}
+                    <p>No reports match your search for "{{ search_query }}"</p>
+                    <a href="{% url 'reports_list' %}" class="btn">Clear Search</a>
+                {% else %}
+                    <p>No reports have been generated yet. Complete a test to generate your first report.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        <div class="back-actions">
+            <a href="{% url 'patient_registration' %}" class="btn primary">New Test</a>
+            <a href="{% url 'index' %}" class="btn">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

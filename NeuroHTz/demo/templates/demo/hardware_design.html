@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Hardware Design - NeuroHTz</title>
+    <style>
+        :root{--bg: #0b1020;--text: #e6e9f2;--muted: #b7bfd6;--brand: #6dd6ff;--brand-2: #7a7dff;--radius: 14px;}
+        * { box-sizing: border-box }
+        body { margin: 0; font-family: ui-sans-serif, system-ui; color: var(--text); background: var(--bg); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin: 40px 0; }
+        .header h1 { font-size: 36px; margin: 0 0 10px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .design-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; }
+        .card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius); padding: 24px; }
+        .card h2 { color: var(--brand); margin: 0 0 16px; }
+        .schematic { width: 100%; height: 200px; background: rgba(255,255,255,.02); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); margin: 16px 0; }
+        .btn { display: inline-flex; padding: 12px 24px; border-radius: 8px; background: var(--brand); color: #04111f; text-decoration: none; font-weight: 600; margin: 8px; }
+        .actions { text-align: center; margin: 40px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Full Hardware Design Analysis</h1>
+            <p style="color: var(--muted);">Comprehensive hardware architecture and design specifications</p>
+        </div>
+        
+        <div class="design-grid">
+            <div class="card">
+                <h2>Circuit Design</h2>
+                <div class="schematic">EEG Amplifier Circuit Schematic</div>
+                <p>Custom PCB design with optimized trace routing for minimal noise and maximum signal integrity.</p>
+                <ul>
+                    <li>4-layer PCB with dedicated ground planes</li>
+                    <li>Differential signal routing</li>
+                    <li>EMI shielding and filtering</li>
+                    <li>Medical-grade isolation</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Power Architecture</h2>
+                <div class="schematic">Power Distribution Network</div>
+                <p>Ultra-low noise power supply design ensuring clean operation of all analog circuits.</p>
+                <ul>
+                    <li>Multiple voltage rails (3.3V, 5V, ±2.5V)</li>
+                    <li>Linear regulators for analog circuits</li>
+                    <li>Battery backup system</li>
+                    <li>Power monitoring and protection</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Signal Processing</h2>
+                <div class="schematic">DSP Block Diagram</div>
+                <p>Real-time digital signal processing pipeline optimized for 40 Hz response detection.</p>
+                <ul>
+                    <li>24-bit ADC with 1 kSPS sampling</li>
+                    <li>Hardware-accelerated FFT</li>
+                    <li>Adaptive filtering algorithms</li>
+                    <li>Phase-locked loop analysis</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Mechanical Design</h2>
+                <div class="schematic">3D CAD Assembly</div>
+                <p>Ergonomic enclosure design optimized for clinical use and portability.</p>
+                <ul>
+                    <li>Medical-grade plastic housing</li>
+                    <li>IP54 protection rating</li>
+                    <li>Integrated cable management</li>
+                    <li>Stackable modular design</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 32px;">
+            <h2>Design Validation & Testing</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div>
+                    <h3>Electrical Testing:</h3>
+                    <ul>
+                        <li>Input noise: &lt;1 µVpp (verified)</li>
+                        <li>CMRR: &gt;110 dB @ 60Hz (verified)</li>
+                        <li>Frequency response: DC-1kHz ±0.1dB</li>
+                        <li>Power consumption: &lt;2W total</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Safety & Compliance:</h3>
+                    <ul>
+                        <li>IEC 60601-1 medical safety (certified)</li>
+                        <li>FDA Class II device requirements</li>
+                        <li>CE marking for European markets</li>
+                        <li>FCC Part 15 EMC compliance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'hardware_prototype' %}" class="btn">Hardware Prototype</a>
+            <a href="{% url 'system_details' %}" class="btn">System Details</a>
+            <a href="{% url 'index' %}" class="btn">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

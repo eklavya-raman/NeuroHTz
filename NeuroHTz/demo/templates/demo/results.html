@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Test Results - NeuroHTz</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root{
+            --bg: #0b1020;
+            --bg-accent: #0f1730;
+            --card: #121a35;
+            --text: #e6e9f2;
+            --muted: #b7bfd6;
+            --brand: #6dd6ff;
+            --brand-2: #7a7dff;
+            --ok: #35d0a8;
+            --warning: #ffd93d;
+            --error: #ff6b6b;
+            --shadow: 0 10px 30px rgba(0,0,0,.35);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box }
+        html, body { height: 100% }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 80% -10%, rgba(109,214,255,.08), transparent 60%),
+                        radial-gradient(900px 500px at 0% 0%, rgba(122,125,255,.10), transparent 60%),
+                        var(--bg);
+            line-height: 1.55;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .header {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin: 0 0 10px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .patient-summary {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .summary-item h3 {
+            margin: 0 0 8px;
+            color: var(--brand);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-item .value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .result-card {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .result-card h2 {
+            margin: 0 0 20px;
+            font-size: 20px;
+            color: var(--brand);
+        }
+        
+        .ai-result-box {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            margin: 32px 0;
+        }
+        
+        .ai-result-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        
+        .ai-result-badge.normal {
+            background: linear-gradient(135deg, var(--ok), #2bb896);
+            color: white;
+            box-shadow: 0 0 30px rgba(53, 208, 168, 0.4);
+        }
+        
+        .ai-result-badge.abnormal {
+            background: linear-gradient(135deg, var(--error), #e85555);
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
+        }
+        
+        .confidence-score {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 16px 0;
+        }
+        
+        .confidence-score.high {
+            color: var(--ok);
+        }
+        
+        .confidence-score.medium {
+            color: var(--warning);
+        }
+        
+        .confidence-score.low {
+            color: var(--error);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255,255,255,.02);
+            border: 1px solid rgba(255,255,255,.05);
+            border-radius: 8px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--brand);
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .recommendations {
+            background: rgba(255, 217, 61, 0.1);
+            border: 1px solid rgba(255, 217, 61, 0.3);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 32px 0;
+        }
+        
+        .recommendations h3 {
+            margin: 0 0 16px;
+            color: var(--warning);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn.primary {
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            color: #04111f;
+            box-shadow: 0 10px 24px rgba(109,214,255,.25), inset 0 0 0 1px rgba(255,255,255,.25);
+        }
+        
+        .btn.secondary {
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,.12);
+        }
+        
+        .btn.success {
+            background: linear-gradient(90deg, var(--ok), #2bb896);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .patient-summary {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Neurological Screening Results</h1>
+            <p style="color: var(--muted);">AI-powered analysis of 40 Hz EEG response</p>
+        </div>
+        
+        <div class="patient-summary">
+            <div class="summary-item">
+                <h3>Patient</h3>
+                <div class="value">{{ patient.name }}</div>
+                <small style="color: var(--muted);">ID: {{ patient.patient_id }}</small>
+            </div>
+            <div class="summary-item">
+                <h3>Test Date</h3>
+                <div class="value">{{ test_session.test_date|date:"M d, Y" }}</div>
+                <small style="color: var(--muted);">{{ test_session.test_date|time:"H:i" }}</small>
+            </div>
+            <div class="summary-item">
+                <h3>Duration</h3>
+                <div class="value">{{ test_session.duration_seconds|default:"300" }}s</div>
+                <small style="color: var(--muted);">Signal Quality: {{ test_session.signal_quality|capfirst }}</small>
+            </div>
+        </div>
+        
+        <div class="result-card ai-result-box">
+            <div class="ai-result-badge {{ test_results.result }}">
+                {{ test_results.get_result_display|upper }}
+            </div>
+            
+            <h2>AI Analysis Result</h2>
+            <div class="confidence-score {% if test_results.confidence_score >= 0.8 %}high{% elif test_results.confidence_score >= 0.6 %}medium{% else %}low{% endif %}">
+                {{ test_results.confidence_score|floatformat:0 }}% Confidence
+            </div>
+            
+            {% if test_results.result == 'abnormal' %}
+                <p style="color: var(--error); font-size: 18px; margin: 20px 0;">
+                    Abnormal 40 Hz response detected. Further evaluation recommended.
+                </p>
+            {% else %}
+                <p style="color: var(--ok); font-size: 18px; margin: 20px 0;">
+                    Normal 40 Hz response detected. No immediate concerns identified.
+                </p>
+            {% endif %}
+        </div>
+        
+        <div class="results-grid">
+            <div class="result-card">
+                <h2>40 Hz Power Spectrum</h2>
+                <div class="chart-container">
+                    <canvas id="powerSpectrumChart"></canvas>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">{{ test_results.power_spectrum_40hz|floatformat:1 }}</div>
+                        <div class="metric-label">Power (µV²)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h2>Phase-Locking Analysis</h2>
+                <div class="chart-container">
+                    <canvas id="phaseLockingChart"></canvas>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">{{ test_results.phase_locking_index|floatformat:2 }}</div>
+                        <div class="metric-label">PLI Score</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">{{ test_results.latency_ms|floatformat:0 }}</div>
+                        <div class="metric-label">Latency (ms)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if test_results.recommendations %}
+        <div class="recommendations">
+            <h3>Clinical Recommendations</h3>
+            <p>{{ test_results.recommendations }}</p>
+            
+            {% if test_results.result == 'abnormal' %}
+            <ul style="margin: 16px 0; padding-left: 20px;">
+                <li>Schedule follow-up with neurologist within 2-4 weeks</li>
+                <li>Consider additional neurological assessments</li>
+                <li>Monitor for early signs of cognitive changes</li>
+                <li>Lifestyle modifications may be beneficial</li>
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="#" class="btn success" onclick="generatePDFReport()">Download PDF Report</a>
+            <a href="{% url 'patient_history' patient.patient_id %}" class="btn secondary">View Patient History</a>
+            <a href="{% url 'patient_registration' %}" class="btn primary">New Test</a>
+            <a href="{% url 'index' %}" class="btn secondary">Back to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        // Get data from Django template
+        const powerSpectrum40Hz = parseFloat('{{ test_results.power_spectrum_40hz|floatformat:1 }}');
+        const phaseLockingIndex = parseFloat('{{ test_results.phase_locking_index|floatformat:2 }}');
+        
+        // Power Spectrum Chart
+        const powerCtx = document.getElementById('powerSpectrumChart').getContext('2d');
+        new Chart(powerCtx, {
+            type: 'line',
+            data: {
+                labels: ['35Hz', '37Hz', '39Hz', '40Hz', '41Hz', '43Hz', '45Hz'],
+                datasets: [{
+                    label: 'Power (µV²)',
+                    data: [3.2, 5.8, 9.1, powerSpectrum40Hz, 8.7, 4.9, 2.1],
+                    borderColor: '#6dd6ff',
+                    backgroundColor: 'rgba(109, 214, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#6dd6ff',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#b7bfd6'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#b7bfd6'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Phase Locking Chart
+        const phaseCtx = document.getElementById('phaseLockingChart').getContext('2d');
+        new Chart(phaseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Phase-Locked', 'Non-Locked'],
+                datasets: [{
+                    data: [phaseLockingIndex, 1 - phaseLockingIndex],
+                    backgroundColor: [
+                        '#35d0a8',
+                        'rgba(255, 255, 255, 0.1)'
+                    ],
+                    borderColor: [
+                        '#35d0a8',
+                        'rgba(255, 255, 255, 0.2)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#b7bfd6'
+                        }
+                    }
+                }
+            }
+        });
+        
+        function generatePDFReport() {
+            // In a real implementation, this would generate and download a PDF
+            alert('PDF report generation would be implemented here. This would include all test results, charts, and clinical recommendations.');
+        }
+    </script>
+</body>
+</html>

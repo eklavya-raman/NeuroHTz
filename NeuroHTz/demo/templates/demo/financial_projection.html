@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Financial Projections - NeuroHTz</title>
+    <style>
+        :root{--bg: #0b1020;--text: #e6e9f2;--muted: #b7bfd6;--brand: #6dd6ff;--brand-2: #7a7dff;--ok: #35d0a8;--radius: 14px;}
+        * { box-sizing: border-box }
+        body { margin: 0; font-family: ui-sans-serif, system-ui; color: var(--text); background: var(--bg); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin: 40px 0; }
+        .header h1 { font-size: 36px; margin: 0 0 10px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .financial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
+        .card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius); padding: 24px; }
+        .card h2 { color: var(--brand); margin: 0 0 16px; }
+        .revenue-chart { width: 100%; height: 200px; background: rgba(255,255,255,.02); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); margin: 16px 0; }
+        .financial-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .financial-table th, .financial-table td { padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,.1); }
+        .financial-table th { color: var(--brand); }
+        .phase-timeline { display: flex; justify-content: space-between; margin: 20px 0; }
+        .phase { text-align: center; padding: 16px; background: rgba(255,255,255,.02); border-radius: 8px; flex: 1; margin: 0 8px; }
+        .phase h3 { color: var(--brand); margin: 0 0 8px; }
+        .btn { display: inline-flex; padding: 12px 24px; border-radius: 8px; background: var(--brand); color: #04111f; text-decoration: none; font-weight: 600; margin: 8px; }
+        .actions { text-align: center; margin: 40px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Financial Projections</h1>
+            <p style="color: var(--muted);">Product development, R&D costs, and revenue projections</p>
+        </div>
+        
+        <div class="financial-grid">
+            <div class="card">
+                <h2>Development Costs</h2>
+                <table class="financial-table">
+                    <tr><th>Category</th><th>Investment</th></tr>
+                    <tr><td>R&D Personnel (24 months)</td><td>$2.4M</td></tr>
+                    <tr><td>Hardware Development</td><td>$800K</td></tr>
+                    <tr><td>Software Development</td><td>$600K</td></tr>
+                    <tr><td>Clinical Trials</td><td>$1.2M</td></tr>
+                    <tr><td>Regulatory Approval</td><td>$400K</td></tr>
+                    <tr><td>Manufacturing Setup</td><td>$1.0M</td></tr>
+                    <tr><th>Total Development</th><th>$6.4M</th></tr>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h2>Revenue Projections</h2>
+                <div class="revenue-chart">Revenue Growth Chart (Year 1-5)</div>
+                <table class="financial-table">
+                    <tr><th>Year</th><th>Units Sold</th><th>Revenue</th></tr>
+                    <tr><td>Year 1</td><td>500</td><td>$2.5M</td></tr>
+                    <tr><td>Year 2</td><td>2,000</td><td>$9.5M</td></tr>
+                    <tr><td>Year 3</td><td>5,000</td><td>$22M</td></tr>
+                    <tr><td>Year 4</td><td>8,000</td><td>$34M</td></tr>
+                    <tr><td>Year 5</td><td>12,000</td><td>$48M</td></tr>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h2>Market Analysis</h2>
+                <h3>Target Markets:</h3>
+                <ul>
+                    <li><strong>Primary Care Clinics:</strong> $15B market</li>
+                    <li><strong>Neurology Practices:</strong> $8B market</li>
+                    <li><strong>Research Institutions:</strong> $3B market</li>
+                    <li><strong>Home Healthcare:</strong> $5B market</li>
+                </ul>
+                <h3>Pricing Strategy:</h3>
+                <ul>
+                    <li>Device: $4,995 (vs $50K+ for alternatives)</li>
+                    <li>Per-test license: $25</li>
+                    <li>Annual software license: $1,200</li>
+                    <li>Maintenance contract: $500/year</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Break-even Analysis</h2>
+                <table class="financial-table">
+                    <tr><th>Metric</th><th>Value</th></tr>
+                    <tr><td>Break-even Units</td><td>1,280 devices</td></tr>
+                    <tr><td>Break-even Timeline</td><td>18 months</td></tr>
+                    <tr><td>ROI at Year 3</td><td>245%</td></tr>
+                    <tr><td>Gross Margin</td><td>68%</td></tr>
+                    <tr><td>Net Margin (Year 5)</td><td>35%</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 32px;">
+            <h2>Development Timeline & Phases</h2>
+            <div class="phase-timeline">
+                <div class="phase">
+                    <h3>Phase 1</h3>
+                    <p><strong>Months 1-6:</strong> Prototype Development</p>
+                    <p>Budget: $1.5M</p>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>Hardware prototyping</li>
+                        <li>Initial software development</li>
+                        <li>Proof of concept testing</li>
+                    </ul>
+                </div>
+                <div class="phase">
+                    <h3>Phase 2</h3>
+                    <p><strong>Months 7-18:</strong> Clinical Validation</p>
+                    <p>Budget: $2.5M</p>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>Clinical trials</li>
+                        <li>Algorithm optimization</li>
+                        <li>Regulatory submissions</li>
+                    </ul>
+                </div>
+                <div class="phase">
+                    <h3>Phase 3</h3>
+                    <p><strong>Months 19-24:</strong> Market Launch</p>
+                    <p>Budget: $2.4M</p>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>Manufacturing scale-up</li>
+                        <li>Market launch</li>
+                        <li>Sales & marketing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Investment Highlights</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div>
+                    <h3>Market Opportunity:</h3>
+                    <ul>
+                        <li>$31B addressable market</li>
+                        <li>55M+ potential patients globally</li>
+                        <li>Growing at 8.1% CAGR</li>
+                        <li>Unmet clinical need</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Competitive Advantages:</h3>
+                    <ul>
+                        <li>10x cost reduction vs alternatives</li>
+                        <li>Portable & easy to use</li>
+                        <li>Strong IP portfolio</li>
+                        <li>Experienced team</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'impact_benefits' %}" class="btn">Impact & Benefits</a>
+            <a href="{% url 'patient_registration' %}" class="btn">Start Testing</a>
+            <a href="{% url 'index' %}" class="btn">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
