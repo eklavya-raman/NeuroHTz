@@ -1,0 +1,14 @@
+{
+    "_comment": "=== AUDIO REFERENCE MANIFEST ===",
+    "_instructions": [
+        "Replace the placeholder URLs below with the actual URLs of the 40 Hz audio files",
+        "hosted on your external audio server. The Django view _load_audio_manifest()",
+        "reads this file at runtime and passes the URLs to the survey template.",
+        "",
+        "phase_b_40hz_track  — Primary 40 Hz binaural / isochronic tone track played during Phase B.",
+        "phase_b_40hz_backup — Fallback URL if the primary server is unreachable."
+    ],
+
+    "phase_b_40hz_track":  "https://audio-server.example.org/neurohtz/40hz_stimulation_track.mp3",
+    "phase_b_40hz_backup": "https://audio-server-backup.example.org/neurohtz/40hz_stimulation_track.mp3"
+}

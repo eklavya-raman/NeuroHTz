@@ -1,0 +1,1415 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NeuroHTz — 40 Hz Stimulation Survey</title>
+    <style>
+        :root {
+            --bg:        #0a0e1a;
+            --bg-sub:    #0f1425;
+            --surface:   #131a2e;
+            --surface-lt:#1a2340;
+            --border:    #1e2d4a;
+            --border-lt: #2a3f6a;
+            --text:      #e2e8f0;
+            --text-sec:  #94a3b8;
+            --muted:     #64748b;
+            --brand:     #3b82f6;
+            --brand-lt:  rgba(59,130,246,.12);
+            --accent:    #8b5cf6;
+            --cyan:      #06b6d4;
+            --ok:        #22d3ee;
+            --ok-lt:     rgba(34,211,238,.1);
+            --warn:      #f59e0b;
+            --warn-lt:   rgba(245,158,11,.1);
+            --danger:    #ef4444;
+            --glow-brand: rgba(59,130,246,.25);
+            --glow-accent: rgba(139,92,246,.2);
+            --radius:    10px;
+            --shadow:    0 4px 24px rgba(0,0,0,.4);
+            --maxw:      760px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .wrap { max-width: var(--maxw); margin: 0 auto; padding: 24px 16px 80px; }
+
+        /* Top bar */
+        .top-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
+        .top-bar .logo { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, var(--brand), var(--accent)); box-shadow: 0 0 12px var(--glow-brand); }
+        .top-bar h1 { font-size: 16px; font-weight: 700; margin: 0; color: var(--text); }
+        .top-bar .back { margin-left: auto; font-size: 13px; color: var(--brand); text-decoration: none; transition: color .2s; }
+        .top-bar .back:hover { color: var(--cyan); }
+
+        /* Phase bar */
+        .phase-bar { display: flex; margin-bottom: 28px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+        .phase-bar .step { flex: 1; text-align: center; padding: 12px 8px; font-size: 13px; font-weight: 600; background: var(--surface); color: var(--muted); transition: background .3s, color .3s; }
+        .phase-bar .step.active    { background: linear-gradient(135deg, var(--brand), var(--accent)); color: #fff; box-shadow: inset 0 0 20px rgba(255,255,255,.1); }
+        .phase-bar .step.completed { background: var(--ok-lt); color: var(--ok); }
+        .phase-bar .step + .step   { border-left: 1px solid var(--border); }
+
+        /* Card */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .card h2 { margin: 0 0 6px; font-size: 20px; color: var(--text); }
+        .card p  { margin: 0 0 18px; color: var(--text-sec); font-size: 14px; }
+        .card ul { color: var(--text-sec); font-size: 14px; }
+        .card ul strong { color: var(--text); }
+
+        /* Audio badge */
+        .audio-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; }
+        .audio-badge.silent  { background: var(--bg-sub); color: var(--muted); border: 1px solid var(--border); }
+        .audio-badge.playing { background: rgba(139,92,246,.12); color: var(--accent); border: 1px solid rgba(139,92,246,.3); }
+        .audio-badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .audio-badge.silent  .dot { background: var(--muted); }
+        .audio-badge.playing .dot { background: var(--accent); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: all .25s; }
+        .btn-primary { background: linear-gradient(135deg, var(--brand), var(--accent)); color: #fff; box-shadow: 0 2px 16px var(--glow-brand); }
+        .btn-primary:hover { box-shadow: 0 4px 24px var(--glow-brand), 0 0 40px var(--glow-accent); transform: translateY(-1px); }
+        .btn-success { background: linear-gradient(135deg, var(--ok), #2dd4bf); color: #0a0e1a; font-weight: 700; box-shadow: 0 2px 16px rgba(34,211,238,.25); }
+        .btn-success:hover { box-shadow: 0 4px 24px rgba(34,211,238,.4); transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-sec); }
+        .btn-outline:hover { background: var(--surface-lt); border-color: var(--brand); color: var(--text); }
+        .btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
+        .actions { display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end; }
+
+        /* Timer */
+        .timer { font-variant-numeric: tabular-nums; font-size: 32px; font-weight: 700; text-align: center; margin: 12px 0 6px; color: var(--text); }
+        .timer-label { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+
+        /* Progress ring */
+        .progress-ring { display: flex; justify-content: center; margin-bottom: 10px; }
+        .progress-ring svg { transform: rotate(-90deg); }
+        .progress-ring circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+        .progress-ring .bg   { stroke: var(--border); }
+        .progress-ring .fill { stroke: var(--brand); transition: stroke-dashoffset .4s ease; filter: drop-shadow(0 0 6px var(--glow-brand)); }
+
+        /* Summary */
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .summary-stat { background: var(--bg-sub); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+        .summary-stat .val { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--brand), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .summary-stat .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.visible { display: block; }
+
+        /* ── Question styling ── */
+        .level-header { background: linear-gradient(135deg, var(--brand-lt), rgba(139,92,246,.08)); color: var(--brand); font-weight: 700; padding: 10px 16px; border-radius: 8px; margin: 28px 0 16px; font-size: 15px; border: 1px solid rgba(59,130,246,.15); }
+        .q-block { background: var(--bg-sub); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+        .q-block .q-label { font-weight: 700; font-size: 13px; color: var(--brand); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .4px; }
+        .q-block .q-text  { font-size: 15px; margin-bottom: 12px; color: var(--text-sec); }
+        .q-block .options { list-style: none; padding: 0; margin: 0; }
+        .q-block .options li { margin-bottom: 6px; }
+        .q-block .options label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .2s; font-size: 14px; color: var(--text-sec); }
+        .q-block .options label:hover { background: var(--brand-lt); border-color: var(--brand); color: var(--text); box-shadow: 0 0 12px var(--glow-brand); }
+        .q-block .options input[type="radio"] { accent-color: var(--brand); width: 16px; height: 16px; }
+        .q-block textarea, .q-block input[type="text"] { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; background: var(--surface); color: var(--text); }
+        .q-block textarea:focus, .q-block input[type="text"]:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--glow-brand); }
+
+        /* Image placeholder */
+        .img-placeholder { background: repeating-linear-gradient(45deg, var(--bg-sub), var(--bg-sub) 10px, var(--surface) 10px, var(--surface) 20px); border: 2px dashed var(--border); border-radius: var(--radius); min-height: 180px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; font-style: italic; text-align: center; padding: 20px; margin-bottom: 14px; }
+
+        /* Memory section */
+        .memory-banner { background: linear-gradient(135deg, rgba(245,158,11,.1), rgba(245,158,11,.05)); border: 1px solid rgba(245,158,11,.3); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; text-align: center; }
+        .memory-banner .mem-timer { font-size: 40px; font-weight: 800; color: var(--warn); margin: 8px 0; font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(245,158,11,.4); }
+        .memory-banner p { margin: 0; color: #fbbf24; font-size: 14px; font-weight: 600; }
+
+        /* Stimulation notice */
+        .stim-notice { background: linear-gradient(135deg, rgba(245,158,11,.08), rgba(245,158,11,.04)); border: 1px solid rgba(245,158,11,.25); border-radius: var(--radius); padding: 20px; text-align: center; margin: 20px 0; }
+        .stim-notice h3 { margin: 0 0 6px; color: var(--warn); }
+        .stim-notice p { margin: 0; color: #fbbf24; font-size: 14px; }
+
+        /* ─── Futuristic Stimulation Screen ─── */
+        .stim-screen { background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; position: relative; overflow: hidden; margin: -24px -16px -80px; }
+        .stim-screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(59,130,246,.1) 0%, transparent 70%); pointer-events: none; }
+
+        /* Circular progress container */
+        .stim-ring-wrap { position: relative; width: 280px; height: 280px; }
+        .stim-ring-wrap svg { width: 280px; height: 280px; transform: rotate(-90deg); filter: drop-shadow(0 0 18px var(--glow-brand)); }
+        .stim-ring-wrap .track { fill: none; stroke: var(--border); stroke-width: 8; }
+        .stim-ring-wrap .progress { fill: none; stroke: url(#stimGrad); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset .5s ease; }
+        .stim-ring-wrap .glow { fill: none; stroke: url(#stimGrad); stroke-width: 14; stroke-linecap: round; opacity: .25; filter: blur(6px); transition: stroke-dashoffset .5s ease; }
+
+        /* Inner content */
+        .stim-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .stim-inner .stim-time { font-size: 44px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 2px; }
+        .stim-inner .stim-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+        .stim-inner .stim-pct { font-size: 14px; color: var(--brand); font-weight: 600; margin-top: 8px; }
+
+        /* Audio visualizer ring */
+        .viz-ring { position: absolute; inset: -36px; pointer-events: none; }
+        .viz-bar { position: absolute; width: 3px; background: linear-gradient(to top, transparent, rgba(96,165,250,.8)); border-radius: 2px; transform-origin: bottom center; bottom: 50%; left: 50%; }
+
+        /* Pulse halo */
+        .stim-halo { position: absolute; width: 320px; height: 320px; border-radius: 50%; border: 1px solid rgba(59,130,246,.12); animation: haloExpand 3s ease-out infinite; pointer-events: none; }
+        .stim-halo:nth-child(2) { animation-delay: 1s; }
+        .stim-halo:nth-child(3) { animation-delay: 2s; }
+        @keyframes haloExpand { 0% { transform: scale(.9); opacity: .5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        .stim-title { color: var(--text-sec); font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px; }
+        .stim-subtitle { color: var(--muted); font-size: 13px; margin-top: 28px; text-align: center; line-height: 1.7; }
+        .stim-subtitle strong { color: var(--text-sec); }
+        .stim-status { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 6px 16px; border-radius: 999px; background: var(--brand-lt); color: var(--brand); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+        .stim-status .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); animation: pulse 1.2s infinite; }
+        .stim-done-btn { display: none; margin-top: 28px; }
+
+        /* Audio listen block */
+        .listen-block { background: rgba(34,211,238,.06); border: 1px solid rgba(34,211,238,.2); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 14px; }
+        .listen-block .listen-label { font-weight: 700; color: var(--ok); font-size: 13px; margin-bottom: 6px; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--border-lt); }
+
+        /* ─── Enhanced Results ─── */
+        .results-hero { text-align: center; margin-bottom: 28px; }
+        .results-hero h2 { font-size: 26px; margin: 0 0 4px; }
+        .results-hero p { color: var(--text-sec); font-size: 14px; margin: 0; }
+        .results-overall { display: flex; gap: 16px; margin-bottom: 28px; }
+        .results-overall .ro-card { flex: 1; background: var(--bg-sub); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; text-align: center; position: relative; overflow: hidden; }
+        .results-overall .ro-card::before { content: ''; position: absolute; inset: 0; opacity: .06; pointer-events: none; }
+        .results-overall .ro-card.part1::before { background: linear-gradient(135deg, var(--brand), var(--accent)); }
+        .results-overall .ro-card.part2::before { background: linear-gradient(135deg, var(--cyan), var(--ok)); }
+        .ro-score { font-size: 38px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .ro-score.p1 { background: linear-gradient(135deg, var(--brand), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .ro-score.p2 { background: linear-gradient(135deg, var(--cyan), var(--ok)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .ro-pct { font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .ro-time { font-size: 12px; color: var(--muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+        .ro-label { font-size: 13px; font-weight: 700; color: var(--text-sec); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px; }
+
+        .section-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .section-title .st-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+        .section-title .st-badge.p1 { background: var(--brand-lt); color: var(--brand); }
+        .section-title .st-badge.p2 { background: var(--ok-lt); color: var(--ok); }
+
+        .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+        .bd-card { background: var(--bg-sub); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+        .bd-card .bd-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .bd-card .bd-name { font-size: 13px; font-weight: 600; color: var(--text-sec); }
+        .bd-card .bd-score { font-size: 14px; font-weight: 800; color: var(--text); }
+        .bd-bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+        .bd-bar .bd-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+        .bd-bar .bd-fill.p1 { background: linear-gradient(90deg, var(--brand), var(--accent)); }
+        .bd-bar .bd-fill.p2 { background: linear-gradient(90deg, var(--cyan), var(--ok)); }
+        .bd-card .bd-pct { font-size: 11px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+        .compare-section { margin: 28px 0; }
+        .compare-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+        .compare-row .cr-label { width: 120px; font-size: 13px; font-weight: 600; color: var(--text-sec); flex-shrink: 0; }
+        .compare-row .cr-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .compare-row .cr-bar-wrap { display: flex; align-items: center; gap: 8px; }
+        .compare-row .cr-bar-wrap .cr-tag { font-size: 10px; font-weight: 700; width: 22px; color: var(--muted); }
+        .compare-row .cr-track { flex: 1; height: 10px; border-radius: 5px; background: var(--border); overflow: hidden; }
+        .compare-row .cr-fill { height: 100%; border-radius: 5px; transition: width .8s ease; }
+        .compare-row .cr-fill.p1 { background: linear-gradient(90deg, var(--brand), var(--accent)); }
+        .compare-row .cr-fill.p2 { background: linear-gradient(90deg, var(--cyan), var(--ok)); }
+        .compare-row .cr-val { font-size: 12px; font-weight: 700; color: var(--text); width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+
+        .perf-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-top: 6px; }
+        .perf-badge.improved  { background: rgba(34,211,238,.1); color: var(--ok); border: 1px solid rgba(34,211,238,.25); }
+        .perf-badge.declined  { background: rgba(239,68,68,.1); color: var(--danger); border: 1px solid rgba(239,68,68,.25); }
+        .perf-badge.same      { background: rgba(245,158,11,.1); color: var(--warn); border: 1px solid rgba(245,158,11,.25); }
+
+        .insight-box { background: linear-gradient(135deg, rgba(59,130,246,.06), rgba(139,92,246,.04)); border: 1px solid rgba(59,130,246,.15); border-radius: var(--radius); padding: 18px 20px; margin-top: 20px; }
+        .insight-box h4 { margin: 0 0 8px; font-size: 14px; color: var(--brand); }
+        .insight-box ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--text-sec); line-height: 1.8; }
+        .insight-box ul li strong { color: var(--text); }
+
+        .results-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+        @media (max-width: 600px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .results-overall { flex-direction: column; }
+            .breakdown-grid { grid-template-columns: 1fr; }
+            .compare-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .compare-row .cr-label { width: auto; }
+            .actions { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo" aria-hidden="true"></div>
+    <h1>40 Hz Stimulation Survey</h1>
+    <a class="back" href="{% url 'index' %}">← Back to home</a>
+</div>
+
+<div class="wrap">
+
+    <div class="phase-bar" id="phaseBar">
+        <div class="step active"  id="stepIntro">Intro</div>
+        <div class="step"         id="stepPhaseA">Part 1 · Silent</div>
+        <div class="step"         id="stepStim">Stimulation</div>
+        <div class="step"         id="stepPhaseB">Part 2 · Post-Stim</div>
+        <div class="step"         id="stepDone">Results</div>
+    </div>
+
+    <!-- ═══════════════ INTRO ═══════════════ -->
+    <div class="screen visible" id="screenIntro">
+        <div class="card">
+            <h2>Welcome to the Cognitive Assessment</h2>
+            <p>This questionnaire evaluates cognitive response across two parts, each with 3 levels of increasing complexity.</p>
+            <ul style="color:var(--muted);font-size:14px;padding-left:20px;">
+                <li><strong>Part 1</strong> — Conducted in <em>silence</em> (no auditory stimulation).</li>
+                <li><strong>Stimulation</strong> — 15-minute <em>40&nbsp;Hz auditory stimulus</em> that <strong>cannot be paused or rewound</strong>.</li>
+                <li><strong>Part 2</strong> — Conducted <em>after</em> stimulation is complete, in <em>silence</em> (no auditory stimulation).</li>
+                <li>Each part is timed — answer as quickly and accurately as you can.</li>
+                <li>Some levels include memory tasks and listening exercises.</li>
+                <li>Please use <strong>headphones</strong> during the stimulation phase.</li>
+            </ul>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="startPhaseA()">Begin Part 1 (Silent) →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PART 1 — SILENT ═══════════════ -->
+    <div class="screen" id="screenPhaseA">
+        <div class="card">
+            <span class="audio-badge silent"><span class="dot"></span> No Audio — Silent Phase</span>
+            <h2>Part 1 — Baseline (No Stimulation)</h2>
+            <p>Answer every question below. Your time is being tracked.</p>
+
+            <div class="progress-ring">
+                <svg width="90" height="90">
+                    <circle class="bg" cx="45" cy="45" r="38"></circle>
+                    <circle class="fill" id="ringA" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                </svg>
+            </div>
+            <div class="timer" id="timerA">00:00</div>
+            <div class="timer-label">Elapsed time — Part 1</div>
+
+            <!-- ─── LEVEL 1 ─── -->
+            <div class="level-header">Level 1</div>
+
+            <div class="q-block">
+                <div class="q-label">Question 1</div>
+                <div class="q-text"><strong>160.</strong> knowledge</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l1q1" value="a"> a. school</label></li>
+                    <li><label><input type="radio" name="p1l1q1" value="b"> b. teacher</label></li>
+                    <li><label><input type="radio" name="p1l1q1" value="c"> c. textbook</label></li>
+                    <li><label><input type="radio" name="p1l1q1" value="d"> d. learning</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 2</div>
+                <div class="q-text"><strong>10.</strong> Identify the figure which completes the pattern.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Arrow pattern figure with options a, b, c, d ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l1q2" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p1l1q2" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p1l1q2" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p1l1q2" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 3</div>
+                <div class="q-text"><strong>106.</strong> Which word does NOT belong with the others?</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l1q3" value="a"> a. tulip</label></li>
+                    <li><label><input type="radio" name="p1l1q3" value="b"> b. rose</label></li>
+                    <li><label><input type="radio" name="p1l1q3" value="c"> c. bud</label></li>
+                    <li><label><input type="radio" name="p1l1q3" value="d"> d. daisy</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 4</div>
+                <div class="q-text">Visual analogy — select the figure that completes the pattern.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Visual analogy picture question, objects in boxes, options a–d ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l1q4" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p1l1q4" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p1l1q4" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p1l1q4" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 5</div>
+                <div class="q-text">
+                    <strong>377.</strong><br>
+                    Battery X lasts longer than Battery Y.<br>
+                    Battery Y doesn't last as long as Battery Z.<br>
+                    Battery Z lasts longer than Battery X.<br><br>
+                    If the first two statements are true, the third statement is:
+                </div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l1q5" value="a"> a. true</label></li>
+                    <li><label><input type="radio" name="p1l1q5" value="b"> b. false</label></li>
+                    <li><label><input type="radio" name="p1l1q5" value="c"> c. uncertain</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 6</div>
+                <div class="q-text"><strong>95.</strong> Shape sequence — identify the next shape in the pattern.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Shape sequence pattern question with options a–d ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l1q6" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p1l1q6" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p1l1q6" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p1l1q6" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <!-- ─── LEVEL 2 ─── -->
+            <div class="level-header">Level 2</div>
+
+            <div class="q-block">
+                <div class="q-label">Question 7</div>
+                <div class="q-text"><strong>201.</strong> Pen is to poet as needle is to</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l2q1" value="a"> a. thread</label></li>
+                    <li><label><input type="radio" name="p1l2q1" value="b"> b. button</label></li>
+                    <li><label><input type="radio" name="p1l2q1" value="c"> c. sewing</label></li>
+                    <li><label><input type="radio" name="p1l2q1" value="d"> d. tailor</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 8</div>
+                <div class="q-text"><strong>91.</strong> Circle pattern sequence — identify the next pattern.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Circle pattern sequence question with options a–d ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l2q2" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p1l2q2" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p1l2q2" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p1l2q2" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 9</div>
+                <div class="q-text">Pattern / visual question.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Question 3 figure ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l2q3" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p1l2q3" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p1l2q3" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p1l2q3" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 10</div>
+                <div class="q-text"><strong>Question 12:</strong> Which is <em>not</em> a prime number?</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l2q4" value="a"> a. 43</label></li>
+                    <li><label><input type="radio" name="p1l2q4" value="b"> b. 67</label></li>
+                    <li><label><input type="radio" name="p1l2q4" value="c"> c. 73</label></li>
+                    <li><label><input type="radio" name="p1l2q4" value="d"> d. 101</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 11</div>
+                <div class="q-text"><strong>244.</strong> table — wood — oak<br>shirt — cloth — ______</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l2q5" value="a"> a. sewing</label></li>
+                    <li><label><input type="radio" name="p1l2q5" value="b"> b. dress</label></li>
+                    <li><label><input type="radio" name="p1l2q5" value="c"> c. cotton</label></li>
+                    <li><label><input type="radio" name="p1l2q5" value="d"> d. tree</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 12</div>
+                <div class="q-text">
+                    <strong>4.</strong> In a certain code:<br>
+                    "564" means "all the best"<br>
+                    "736" means "best of luck"<br>
+                    "423" means "all is luck"<br><br>
+                    Which of the following is the code for "all"?
+                </div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1l2q6" value="a"> a. 6</label></li>
+                    <li><label><input type="radio" name="p1l2q6" value="b"> b. 4</label></li>
+                    <li><label><input type="radio" name="p1l2q6" value="c"> c. 3</label></li>
+                    <li><label><input type="radio" name="p1l2q6" value="d"> d. 7</label></li>
+                </ul>
+            </div>
+
+            <!-- ─── LEVEL 3 — Memory ─── -->
+            <div class="level-header">Level 3 — Memory Challenge</div>
+
+            <!-- Step 1: Instructions -->
+            <div id="memInstructionsA" class="q-block" style="text-align:center;">
+                <div class="q-label">🧠 Memory Test Instructions</div>
+                <div class="q-text" style="font-size:15px; line-height:1.8;">
+                    You will be shown an image for <strong>30 seconds</strong>.<br>
+                    Study it carefully — after the time is up the image will disappear<br>
+                    and you will need to answer questions about it from memory.<br><br>
+                    <em>You may also click "I'm Ready" to end the timer early and proceed to the questions.</em>
+                </div>
+                <div class="actions" style="justify-content:center; margin-top:20px;">
+                    <button class="btn btn-primary" onclick="enterMemoryA()">Enter Memory Challenge →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Image + Countdown -->
+            <div id="memoryBlockA" style="display:none;">
+                <div class="memory-banner">
+                    <p>Memorise the image below!</p>
+                    <div class="mem-timer" id="memTimerA">30</div>
+                    <p style="font-size:12px; margin-top:4px;">seconds remaining</p>
+                </div>
+                <div class="img-placeholder" id="memImageA" style="min-height:260px;">
+                    [ IMAGE PLACEHOLDER — Memory image for Part 1:<br>
+                    tap with water drops · gift box · book (page 23, word "cat") ·<br>
+                    clothes on line · cot · crayons · sleeping dog · children team · broccoli · clown ]
+                </div>
+                <div class="actions" style="justify-content:center;">
+                    <button class="btn btn-outline" onclick="skipMemoryA()">I'm Ready — Show Questions</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Questions -->
+            <div id="memQuestionsA" style="display:none;">
+                <div class="q-block">
+                    <div class="q-label">Question 13 (Memory)</div>
+                    <div class="q-text">What was in the cot?</div>
+                    <input type="text" name="p1l3m1" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 14 (Memory)</div>
+                    <div class="q-text">How many players were there in the team?</div>
+                    <input type="text" name="p1l3m2" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 15 (Memory)</div>
+                    <div class="q-text">What number was written on the page of the book?</div>
+                    <input type="text" name="p1l3m3" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 16 (Memory)</div>
+                    <div class="q-text">What colour was the ribbon on the present?</div>
+                    <input type="text" name="p1l3m4" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 17 (Memory)</div>
+                    <div class="q-text">What colour was the crayon on the far left?</div>
+                    <input type="text" name="p1l3m5" placeholder="Type your answer…">
+                </div>
+            </div>
+
+            <!-- Reading Comprehension -->
+            <div class="level-header">Reading Comprehension</div>
+            <div class="q-block">
+                <div class="q-label">Question 18 (Reading Comprehension)</div>
+                <div class="q-text" style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:16px;">
+                    Vincent has a paper route. Each morning, he delivers 37 newspapers to customers in his neighborhood.
+                    It takes Vincent 50 minutes to deliver all the papers. If Vincent is sick or has plans, his friend Thomas,
+                    who lives on the same street, will sometimes deliver the papers for him.
+                </div>
+                <div class="q-text">Vincent and Thomas live in the same neighborhood.</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1rc" value="a"> a. It takes Thomas more than 50 minutes to deliver the papers.</label></li>
+                    <li><label><input type="radio" name="p1rc" value="b"> b. It is dark outside when Vincent begins his deliveries.</label></li>
+                    <li><label><input type="radio" name="p1rc" value="c"> c. Thomas would like to have his own paper route.</label></li>
+                </ul>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="finishPhaseA()">Finish Part 1 → Proceed to Part 2</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ TRANSITION ═══════════════ -->
+    <div class="screen" id="screenTransition">
+        <div class="card" style="text-align:center;">
+            <h2>Part 1 Complete ✓</h2>
+            <div class="stim-notice">
+                <h3>⚠ 15-Minute 40 Hz Stimulation Required</h3>
+                <p>
+                    Before entering Part 2, you will undergo <strong>15 minutes of mandatory 40&nbsp;Hz auditory stimulation</strong>.<br>
+                    The tone <strong>cannot be paused, skipped, or rewound</strong>.<br>
+                    Please put on headphones now and find a comfortable position.
+                </p>
+            </div>
+            <div class="actions" style="justify-content:center;">
+                <button class="btn btn-success" onclick="startStimulation()">🎧 Begin 15-Minute Stimulation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ STIMULATION SCREEN ═══════════════ -->
+    <div class="screen" id="screenStimulation">
+        <div class="stim-screen">
+            <!-- Pulse halos -->
+            <div class="stim-halo"></div>
+            <div class="stim-halo"></div>
+            <div class="stim-halo"></div>
+
+            <div class="stim-title">40 Hz Auditory Stimulation</div>
+
+            <div class="stim-ring-wrap">
+                <!-- SVG circular progress -->
+                <svg viewBox="0 0 280 280">
+                    <defs>
+                        <linearGradient id="stimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3b82f6" />
+                            <stop offset="50%" stop-color="#8b5cf6" />
+                            <stop offset="100%" stop-color="#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="track" cx="140" cy="140" r="124" />
+                    <circle class="glow" cx="140" cy="140" r="124" id="stimRingGlow"
+                            stroke-dasharray="779.29" stroke-dashoffset="779.29" />
+                    <circle class="progress" cx="140" cy="140" r="124" id="stimRing"
+                            stroke-dasharray="779.29" stroke-dashoffset="779.29" />
+                </svg>
+
+                <!-- Audio visualizer bars (positioned around the ring) -->
+                <div class="viz-ring" id="vizRing"></div>
+
+                <!-- Inner readout -->
+                <div class="stim-inner">
+                    <div class="stim-time" id="stimTime">15:00</div>
+                    <div class="stim-label">remaining</div>
+                    <div class="stim-pct" id="stimPct">0%</div>
+                </div>
+            </div>
+
+            <div class="stim-status">
+                <span class="pulse-dot"></span>
+                <span id="stimStatusText">Stimulation Active</span>
+            </div>
+
+            <div class="stim-subtitle">
+                <strong>Do not close this page or remove headphones.</strong><br>
+                The assessment will continue automatically when stimulation is complete.
+            </div>
+
+            <div class="stim-done-btn" id="stimDoneBtn">
+                <button class="btn btn-success" onclick="startPhaseB()">✓ Proceed to Part 2 →</button>
+            </div>
+
+            <!-- DEBUG: skip stimulation -->
+            <div style="margin-top:18px;">
+                <button class="btn btn-outline" style="color:#f87171;border-color:#f87171;font-size:11px;padding:6px 14px;" onclick="skipStimulation()">[DEBUG] Skip Stimulation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PART 2 — 40 Hz ═══════════════ -->
+    <div class="screen" id="screenPhaseB">
+        <div class="card">
+            <span class="audio-badge silent"><span class="dot"></span> No Audio — Post-Stimulation Phase</span>
+            <h2>Part 2 — Post-Stimulation (No Sound)</h2>
+            <p>Answer the questions below. The 40&nbsp;Hz stimulation has been completed. This phase is conducted in silence.</p>
+
+            <div class="progress-ring">
+                <svg width="90" height="90">
+                    <circle class="bg" cx="45" cy="45" r="38"></circle>
+                    <circle class="fill" id="ringB" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                </svg>
+            </div>
+            <div class="timer" id="timerB">00:00</div>
+            <div class="timer-label">Elapsed time — Part 2</div>
+
+            <!-- ─── LEVEL 1 ─── -->
+            <div class="level-header">Level 1</div>
+
+            <div class="q-block">
+                <div class="q-label">Question 1</div>
+                <div class="q-text"><strong>188.</strong> Play is to actor as concert is to</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l1q1" value="a"> a. symphony</label></li>
+                    <li><label><input type="radio" name="p2l1q1" value="b"> b. musician</label></li>
+                    <li><label><input type="radio" name="p2l1q1" value="c"> c. piano</label></li>
+                    <li><label><input type="radio" name="p2l1q1" value="d"> d. percussion</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 2</div>
+                <div class="q-text"><strong>90.</strong> Symbol sequence — identify the next symbol in the pattern.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Symbol sequence pattern question with options a–d ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l1q2" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p2l1q2" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p2l1q2" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p2l1q2" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 3</div>
+                <div class="q-text"><strong>155.</strong> culture</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l1q3" value="a"> a. civility</label></li>
+                    <li><label><input type="radio" name="p2l1q3" value="b"> b. education</label></li>
+                    <li><label><input type="radio" name="p2l1q3" value="c"> c. agriculture</label></li>
+                    <li><label><input type="radio" name="p2l1q3" value="d"> d. customs</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 4</div>
+                <div class="q-text"><strong>101.</strong> Block pattern sequence — identify the next pattern.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Block pattern sequence question with options a–d ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l1q4" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p2l1q4" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p2l1q4" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p2l1q4" value="d"> d</label></li>
+                </ul>
+            </div>
+
+            <!-- ─── LEVEL 2 ─── -->
+            <div class="level-header">Level 2</div>
+
+            <div class="q-block">
+                <div class="q-label">Question 5</div>
+                <div class="q-text"><strong>243.</strong> carpenter — saw — nails<br>pediatrician — stethoscope — ______</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q1" value="a"> a. thermometer</label></li>
+                    <li><label><input type="radio" name="p2l2q1" value="b"> b. baby</label></li>
+                    <li><label><input type="radio" name="p2l2q1" value="c"> c. doctor</label></li>
+                    <li><label><input type="radio" name="p2l2q1" value="d"> d. illness</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 6</div>
+                <div class="q-text"><strong>166.</strong> purchase</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q2" value="a"> a. trade</label></li>
+                    <li><label><input type="radio" name="p2l2q2" value="b"> b. money</label></li>
+                    <li><label><input type="radio" name="p2l2q2" value="c"> c. bank</label></li>
+                    <li><label><input type="radio" name="p2l2q2" value="d"> d. acquisition</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 7</div>
+                <div class="q-text"><strong>Question 14:</strong> What will be the next number?<br>3, 5, 7, 11, 13, 17, ____</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q3" value="a"> a. 21</label></li>
+                    <li><label><input type="radio" name="p2l2q3" value="b"> b. 19</label></li>
+                    <li><label><input type="radio" name="p2l2q3" value="c"> c. 25</label></li>
+                    <li><label><input type="radio" name="p2l2q3" value="d"> d. 20</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 8</div>
+                <div class="q-text">
+                    <strong>371.</strong><br>
+                    The temperature on Monday was lower than on Tuesday.<br>
+                    The temperature on Wednesday was lower than on Tuesday.<br>
+                    The temperature on Monday was higher than on Wednesday.<br><br>
+                    If the first two statements are true, the third statement is:
+                </div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q4" value="a"> a. true</label></li>
+                    <li><label><input type="radio" name="p2l2q4" value="b"> b. false</label></li>
+                    <li><label><input type="radio" name="p2l2q4" value="c"> c. uncertain</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 9</div>
+                <div class="q-text"><strong>249.</strong> snow — mountain — ski<br>warmth — lake — ______</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q5" value="a"> a. sand</label></li>
+                    <li><label><input type="radio" name="p2l2q5" value="b"> b. swim</label></li>
+                    <li><label><input type="radio" name="p2l2q5" value="c"> c. sunburn</label></li>
+                    <li><label><input type="radio" name="p2l2q5" value="d"> d. vacation</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 10</div>
+                <div class="q-text">Find the odd one out from the following figures.</div>
+                <div class="img-placeholder">[ IMAGE PLACEHOLDER — Odd-one-out figures A, B, C, D ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q6" value="a"> A</label></li>
+                    <li><label><input type="radio" name="p2l2q6" value="b"> B</label></li>
+                    <li><label><input type="radio" name="p2l2q6" value="c"> C</label></li>
+                    <li><label><input type="radio" name="p2l2q6" value="d"> D</label></li>
+                </ul>
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 11</div>
+                <div class="q-text">
+                    <strong>10.</strong> If white is called 'yellow', yellow is called 'blue', blue is called 'red',
+                    red is called 'black', black is called 'violet', violet is called 'green' and green is called 'orange',
+                    then what would be the colour if we mix red and green together?
+                </div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2l2q7" value="a"> a. Red</label></li>
+                    <li><label><input type="radio" name="p2l2q7" value="b"> b. Green</label></li>
+                    <li><label><input type="radio" name="p2l2q7" value="c"> c. Blue</label></li>
+                    <li><label><input type="radio" name="p2l2q7" value="d"> d. Yellow</label></li>
+                </ul>
+            </div>
+
+            <!-- ─── LEVEL 3 — Memory ─── -->
+            <div class="level-header">Level 3 — Memory Challenge</div>
+
+            <!-- Step 1: Instructions -->
+            <div id="memInstructionsB" class="q-block" style="text-align:center;">
+                <div class="q-label">🧠 Memory Test Instructions</div>
+                <div class="q-text" style="font-size:15px; line-height:1.8;">
+                    You will be shown an image for <strong>30 seconds</strong>.<br>
+                    Study it carefully — after the time is up the image will disappear<br>
+                    and you will need to answer questions about it from memory.<br><br>
+                    <em>You may also click "I'm Ready" to end the timer early and proceed to the questions.</em>
+                </div>
+                <div class="actions" style="justify-content:center; margin-top:20px;">
+                    <button class="btn btn-primary" onclick="enterMemoryB()">Enter Memory Challenge →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Image + Countdown -->
+            <div id="memoryBlockB" style="display:none;">
+                <div class="memory-banner">
+                    <p>Memorise the image below!</p>
+                    <div class="mem-timer" id="memTimerB">30</div>
+                    <p style="font-size:12px; margin-top:4px;">seconds remaining</p>
+                </div>
+                <div class="img-placeholder" id="memImageB" style="min-height:260px;">
+                    [ IMAGE PLACEHOLDER — Memory image for Part 2:<br>
+                    children in boat · man playing guitar · books and pens · tree with squirrel ·<br>
+                    boy carrying books · clown fish · scissors · owl sitting on books ]
+                </div>
+                <div class="actions" style="justify-content:center;">
+                    <button class="btn btn-outline" onclick="skipMemoryB()">I'm Ready — Show Questions</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Questions -->
+            <div id="memQuestionsB" style="display:none;">
+                <div class="q-block">
+                    <div class="q-label">Question 12 (Memory)</div>
+                    <div class="q-text">What was the Owl sitting on?</div>
+                    <input type="text" name="p2l3m1" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 13 (Memory)</div>
+                    <div class="q-text">What animal was in the tree?</div>
+                    <input type="text" name="p2l3m2" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 14 (Memory)</div>
+                    <div class="q-text">How many white stripes did the Clown fish have?</div>
+                    <input type="text" name="p2l3m3" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 15 (Memory)</div>
+                    <div class="q-text">How many books was the boy carrying?</div>
+                    <input type="text" name="p2l3m4" placeholder="Type your answer…">
+                </div>
+                <div class="q-block">
+                    <div class="q-label">Question 16 (Memory)</div>
+                    <div class="q-text">Did the man playing the guitar have a beard?</div>
+                    <input type="text" name="p2l3m5" placeholder="Type your answer…">
+                </div>
+            </div>
+
+            <!-- Visual Puzzle -->
+            <div class="level-header">Visual Puzzle</div>
+            <div class="q-block">
+                <div class="q-label">Question 17 (Visual Puzzle)</div>
+                <div class="q-text">Which pieces fit into the curve?</div>
+                <div class="img-placeholder" style="min-height:220px;">[ IMAGE PLACEHOLDER — Jigsaw puzzle image with options a–f ]</div>
+                <ul class="options">
+                    <li><label><input type="radio" name="p2puzzle" value="a"> a</label></li>
+                    <li><label><input type="radio" name="p2puzzle" value="b"> b</label></li>
+                    <li><label><input type="radio" name="p2puzzle" value="c"> c</label></li>
+                    <li><label><input type="radio" name="p2puzzle" value="d"> d</label></li>
+                    <li><label><input type="radio" name="p2puzzle" value="e"> e</label></li>
+                    <li><label><input type="radio" name="p2puzzle" value="f"> f</label></li>
+                </ul>
+            </div>
+
+            <!-- Listening Exercises -->
+            <div class="level-header">Listening Exercises</div>
+
+            <div class="q-block">
+                <div class="q-label">Question 18 (Listening Exercise 1)</div>
+                <div class="listen-block">
+                    <div class="listen-label">🔊 Listen to the audio below</div>
+                    <p style="font-size:13px;color:var(--muted);margin:0;">
+                        <em>Audio content: Teak, teak, sal, sal, bougainvillea, bougainvillea, appetite, appetite, eucalyptus, eucalyptus</em>
+                    </p>
+                    <div class="img-placeholder" style="min-height:60px;">
+                        [ AUDIO PLACEHOLDER — Listening exercise 1 audio file.<br>
+                        Update URL in <code>audio_reference_manifest.json</code> ]
+                    </div>
+                </div>
+                <div class="q-text">1. How many names of trees were spelled in the audio above?</div>
+                <input type="text" name="p2listen1q1" placeholder="Type your answer…" style="margin-bottom:12px;">
+                <div class="q-text">2. Did you hear any word related to health?</div>
+                <input type="text" name="p2listen1q2" placeholder="Type your answer…">
+            </div>
+
+            <div class="q-block">
+                <div class="q-label">Question 19 (Listening Exercise 2)</div>
+                <div class="listen-block">
+                    <div class="listen-label">🔊 Listen to the audio below</div>
+                    <p style="font-size:13px;color:var(--muted);margin:0;">
+                        <em>Audio content: Waistcoat, waistcoat, raincoat, raincoat, chilli sauce, chilli sauce, tortilla, tortilla, beanie, beanie</em>
+                    </p>
+                    <div class="img-placeholder" style="min-height:60px;">
+                        [ AUDIO PLACEHOLDER — Listening exercise 2 audio file.<br>
+                        Update URL in <code>audio_reference_manifest.json</code> ]
+                    </div>
+                </div>
+                <div class="q-text">1. How many winter wears did you hear in the audio above?</div>
+                <input type="text" name="p2listen2q1" placeholder="Type your answer…" style="margin-bottom:12px;">
+                <div class="q-text">2. Can you name any dish mentioned in the audio?</div>
+                <input type="text" name="p2listen2q2" placeholder="Type your answer…">
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-success" onclick="finishPhaseB()">Finish Part 2 ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ RESULTS ═══════════════ -->
+    <div class="screen" id="screenDone">
+        <div class="card">
+            <!-- Hero -->
+            <div class="results-hero">
+                <h2>Assessment Complete 🎉</h2>
+                <p>Here is your detailed performance breakdown across both parts.</p>
+            </div>
+
+            <!-- Overall scores -->
+            <div class="results-overall">
+                <div class="ro-card part1">
+                    <div class="ro-label">Part 1 — Silent</div>
+                    <div class="ro-score p1" id="roScoreA">0 / 0</div>
+                    <div class="ro-pct" id="roPctA">0%</div>
+                    <div class="ro-time">⏱ <span id="roTimeA">--:--</span></div>
+                </div>
+                <div class="ro-card part2">
+                    <div class="ro-label">Part 2 — Post-Stim</div>
+                    <div class="ro-score p2" id="roScoreB">0 / 0</div>
+                    <div class="ro-pct" id="roPctB">0%</div>
+                    <div class="ro-time">⏱ <span id="roTimeB">--:--</span></div>
+                </div>
+            </div>
+
+            <!-- Performance change badge -->
+            <div style="text-align:center;">
+                <div class="perf-badge" id="perfBadge"></div>
+            </div>
+
+            <hr class="results-divider">
+
+            <!-- ─── Part 1 Section Breakdown ─── -->
+            <div class="section-title"><span class="st-badge p1">Part 1</span> Section Breakdown</div>
+            <div class="breakdown-grid" id="bdGridA"></div>
+
+            <!-- ─── Part 2 Section Breakdown ─── -->
+            <div class="section-title"><span class="st-badge p2">Part 2</span> Section Breakdown</div>
+            <div class="breakdown-grid" id="bdGridB"></div>
+
+            <hr class="results-divider">
+
+            <!-- ─── Side-by-side Comparison ─── -->
+            <div class="section-title">📊 Part 1 vs Part 2 — Comparison</div>
+            <div class="compare-section" id="compareSection"></div>
+
+            <!-- ─── Insights ─── -->
+            <div class="insight-box" id="insightBox">
+                <h4>💡 Key Observations</h4>
+                <ul id="insightList"></ul>
+            </div>
+
+            <div class="actions" style="margin-top:28px; justify-content:center;">
+                <a class="btn btn-outline" href="{% url 'index' %}">Return Home</a>
+                <button class="btn btn-primary" onclick="location.reload()">Retake Survey</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden audio — 40 Hz tone (served externally) -->
+<audio id="audio40hz" preload="auto" loop>
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        AUDIO SOURCE REFERENCE  (served from external server)
+        Update the URLs in  demo/audio_reference_manifest.json
+        ═══════════════════════════════════════════════════════════════
+    -->
+    <source src="{{ audio_manifest.phase_b_40hz_track }}" type="audio/mpeg" />
+    <source src="{{ audio_manifest.phase_b_40hz_backup }}" type="audio/mpeg" />
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+(function () {
+    "use strict";
+
+    const state = {
+        phaseAStart: null, phaseAEnd: null,
+        phaseBStart: null, phaseBEnd: null,
+        answersA: [], answersB: [],
+    };
+    let timerInterval = null;
+    const CIRCUM = 238.76;
+
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+        document.getElementById(id).classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function setStep(activeId) {
+        const order = ['stepIntro','stepPhaseA','stepStim','stepPhaseB','stepDone'];
+        const idx = order.indexOf(activeId);
+        order.forEach((id, i) => {
+            const el = document.getElementById(id);
+            el.classList.remove('active','completed');
+            if (i < idx) el.classList.add('completed');
+            if (i === idx) el.classList.add('active');
+        });
+    }
+    function fmtTime(ms) {
+        const s = Math.floor(ms / 1000);
+        return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+    }
+    function startTimer(elId, ringId, startTime) {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            document.getElementById(elId).textContent = fmtTime(elapsed);
+            const pct = Math.min(elapsed / 300000, 1);
+            document.getElementById(ringId).style.strokeDashoffset = CIRCUM * (1 - pct);
+        }, 250);
+    }
+    function collectAnswers(containerId) {
+        const c = document.getElementById(containerId);
+        if (!c) return [];
+        const ans = [];
+        c.querySelectorAll('input[type="radio"]:checked').forEach(r => ans.push({ name: r.name, value: r.value }));
+        c.querySelectorAll('input[type="text"], textarea').forEach(t => { if (t.value.trim()) ans.push({ name: t.name, value: t.value.trim() }); });
+        return ans;
+    }
+
+    /* Memory challenge — 3-step flow */
+    let memIntervalA = null;
+    let memIntervalB = null;
+
+    function revealMemQuestions(part) {
+        const suffix = part === 'A' ? 'A' : 'B';
+        document.getElementById('memoryBlock' + suffix).style.display = 'none';
+        document.getElementById('memQuestions' + suffix).style.display = 'block';
+    }
+
+    window.enterMemoryA = function () {
+        document.getElementById('memInstructionsA').style.display = 'none';
+        document.getElementById('memoryBlockA').style.display = 'block';
+        /* auto-start countdown */
+        let secs = 30;
+        const el = document.getElementById('memTimerA');
+        memIntervalA = setInterval(() => {
+            secs--;
+            el.textContent = secs;
+            if (secs <= 0) {
+                clearInterval(memIntervalA);
+                memIntervalA = null;
+                revealMemQuestions('A');
+            }
+        }, 1000);
+    };
+    window.skipMemoryA = function () {
+        if (memIntervalA) { clearInterval(memIntervalA); memIntervalA = null; }
+        revealMemQuestions('A');
+    };
+
+    window.enterMemoryB = function () {
+        document.getElementById('memInstructionsB').style.display = 'none';
+        document.getElementById('memoryBlockB').style.display = 'block';
+        let secs = 30;
+        const el = document.getElementById('memTimerB');
+        memIntervalB = setInterval(() => {
+            secs--;
+            el.textContent = secs;
+            if (secs <= 0) {
+                clearInterval(memIntervalB);
+                memIntervalB = null;
+                revealMemQuestions('B');
+            }
+        }, 1000);
+    };
+    window.skipMemoryB = function () {
+        if (memIntervalB) { clearInterval(memIntervalB); memIntervalB = null; }
+        revealMemQuestions('B');
+    };
+
+    /* Phase transitions */
+    window.startPhaseA = function () {
+        state.phaseAStart = Date.now();
+        show('screenPhaseA'); setStep('stepPhaseA');
+        startTimer('timerA', 'ringA', state.phaseAStart);
+    };
+    window.finishPhaseA = function () {
+        clearInterval(timerInterval);
+        state.phaseAEnd = Date.now();
+        state.answersA = collectAnswers('screenPhaseA');
+        show('screenTransition'); setStep('stepStim');
+    };
+
+    /* ─── Stimulation (15-minute mandatory) ─── */
+    const STIM_DURATION = 15 * 60; // 900 seconds
+    const STIM_CIRCUM = 2 * Math.PI * 124; // ~779.29
+    let stimInterval = null;
+    let vizAnimFrame = null;
+    let vizBars = [];
+
+    // Build visualizer bars around the ring
+    (function initVizBars() {
+        const ring = document.getElementById('vizRing');
+        const count = 64;
+        for (let i = 0; i < count; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'viz-bar';
+            const angle = (i / count) * 360;
+            const rad = angle * Math.PI / 180;
+            const radius = 158; // distance from center
+            const x = Math.cos(rad) * radius;
+            const y = Math.sin(rad) * radius;
+            bar.style.transform = `translate(${x}px, ${-y}px) rotate(${angle + 90}deg)`;
+            bar.style.height = '8px';
+            bar.style.opacity = '0';
+            ring.appendChild(bar);
+            vizBars.push(bar);
+        }
+    })();
+
+    function animateViz(time) {
+        vizBars.forEach((bar, i) => {
+            const wave1 = Math.sin(time * 0.003 + i * 0.35) * 0.5 + 0.5;
+            const wave2 = Math.sin(time * 0.005 + i * 0.2) * 0.5 + 0.5;
+            const wave3 = Math.sin(time * 0.002 + i * 0.5) * 0.5 + 0.5;
+            const combined = (wave1 * 0.5 + wave2 * 0.3 + wave3 * 0.2);
+            const h = 6 + combined * 28;
+            bar.style.height = h + 'px';
+            bar.style.opacity = 0.3 + combined * 0.7;
+            // Color shift: blue → purple → cyan
+            const hue = 210 + combined * 60;
+            bar.style.background = `linear-gradient(to top, transparent, hsla(${hue}, 85%, 65%, ${0.4 + combined * 0.6}))`;
+        });
+        vizAnimFrame = requestAnimationFrame(animateViz);
+    }
+
+    window.startStimulation = function () {
+        show('screenStimulation'); setStep('stepStim');
+        document.getElementById('phaseBar').style.display = 'none'; // hide bar during stim
+
+        const audio = document.getElementById('audio40hz');
+        audio.currentTime = 0;
+        audio.play().catch(err => console.warn('Audio play blocked:', err));
+        audio.removeAttribute('controls');
+
+        const startTime = Date.now();
+        vizAnimFrame = requestAnimationFrame(animateViz);
+
+        stimInterval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const remaining = Math.max(STIM_DURATION - elapsed, 0);
+            const mins = Math.floor(remaining / 60);
+            const secs = Math.floor(remaining % 60);
+            document.getElementById('stimTime').textContent =
+                String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+
+            const pct = Math.min(elapsed / STIM_DURATION, 1);
+            document.getElementById('stimPct').textContent = Math.floor(pct * 100) + '%';
+            const offset = STIM_CIRCUM * (1 - pct);
+            document.getElementById('stimRing').style.strokeDashoffset = offset;
+            document.getElementById('stimRingGlow').style.strokeDashoffset = offset;
+
+            if (remaining <= 0) {
+                clearInterval(stimInterval);
+                stimInterval = null;
+                if (vizAnimFrame) { cancelAnimationFrame(vizAnimFrame); vizAnimFrame = null; }
+                document.getElementById('stimTime').textContent = '00:00';
+                document.getElementById('stimPct').textContent = '100%';
+                document.getElementById('stimStatusText').textContent = 'Stimulation Complete';
+                document.getElementById('stimDoneBtn').style.display = 'block';
+            }
+        }, 250);
+    };
+
+    /* DEBUG: skip the 15-min stimulation */
+    window.skipStimulation = function () {
+        if (stimInterval) { clearInterval(stimInterval); stimInterval = null; }
+        if (vizAnimFrame) { cancelAnimationFrame(vizAnimFrame); vizAnimFrame = null; }
+        startPhaseB();
+    };
+
+    window.startPhaseB = function () {
+        if (stimInterval) { clearInterval(stimInterval); stimInterval = null; }
+        if (vizAnimFrame) { cancelAnimationFrame(vizAnimFrame); vizAnimFrame = null; }
+        // Stop audio — Part 2 is conducted in silence after stimulation
+        const audioEl = document.getElementById('audio40hz');
+        audioEl.pause(); audioEl.currentTime = 0;
+        document.getElementById('phaseBar').style.display = 'flex';
+        state.phaseBStart = Date.now();
+        show('screenPhaseB'); setStep('stepPhaseB');
+        startTimer('timerB', 'ringB', state.phaseBStart);
+    };
+    /* ─── Answer Keys ─── */
+    // MCQ answers: value must match exactly
+    // Text answers: user input is lowercased and trimmed, then matched against array of acceptable answers
+    const ANSWER_KEY_A = {
+        // Level 1 (Q1-Q6)
+        p1l1q1: { type: 'mcq', answer: 'd' },
+        p1l1q2: { type: 'mcq', answer: 'c' },
+        p1l1q3: { type: 'mcq', answer: 'c' },
+        p1l1q4: { type: 'mcq', answer: 'b' },
+        p1l1q5: { type: 'mcq', answer: 'c' },
+        p1l1q6: { type: 'mcq', answer: 'a' },
+        // Level 2 (Q7-Q12)
+        p1l2q1: { type: 'mcq', answer: 'd' },
+        p1l2q2: { type: 'mcq', answer: 'a' },
+        p1l2q3: { type: 'mcq', answer: 'b' },
+        p1l2q4: { type: 'mcq', answer: 'a' },
+        p1l2q5: { type: 'mcq', answer: 'c' },
+        p1l2q6: { type: 'mcq', answer: 'b' },
+        // Level 3 Memory (Q13-Q17)
+        p1l3m1: { type: 'text', answers: ['baby', 'a baby', 'infant'] },
+        p1l3m2: { type: 'text', answers: ['11', 'eleven'] },
+        p1l3m3: { type: 'text', answers: ['23', 'twenty three', 'twenty-three'] },
+        p1l3m4: { type: 'text', answers: ['red'] },
+        p1l3m5: { type: 'text', answers: ['red'] },
+        // Reading Comprehension (Q18)
+        p1rc:   { type: 'mcq', answer: 'a' },
+    };
+
+    const ANSWER_KEY_B = {
+        // Level 1 (Q1-Q4)
+        p2l1q1: { type: 'mcq', answer: 'b' },
+        p2l1q2: { type: 'mcq', answer: 'c' },
+        p2l1q3: { type: 'mcq', answer: 'd' },
+        p2l1q4: { type: 'mcq', answer: 'a' },
+        // Level 2 (Q5-Q11)
+        p2l2q1: { type: 'mcq', answer: 'a' },
+        p2l2q2: { type: 'mcq', answer: 'd' },
+        p2l2q3: { type: 'mcq', answer: 'b' },
+        p2l2q4: { type: 'mcq', answer: 'c' },
+        p2l2q5: { type: 'mcq', answer: 'b' },
+        p2l2q6: { type: 'mcq', answer: 'c' },
+        p2l2q7: { type: 'mcq', answer: 'd' },
+        // Level 3 Memory (Q12-Q16)
+        p2l3m1: { type: 'text', answers: ['books', 'book', 'a book', 'stack of books'] },
+        p2l3m2: { type: 'text', answers: ['squirrel', 'a squirrel'] },
+        p2l3m3: { type: 'text', answers: ['3', 'three'] },
+        p2l3m4: { type: 'text', answers: ['3', 'three'] },
+        p2l3m5: { type: 'text', answers: ['no'] },
+        // Visual Puzzle (Q17)
+        p2puzzle: { type: 'mcq', answer: 'b' },
+        // Listening Exercises (Q18-Q19)
+        p2listen1q1: { type: 'text', answers: ['4', 'four'] },
+        p2listen1q2: { type: 'text', answers: ['no'] },
+        p2listen2q1: { type: 'text', answers: ['2', 'two'] },
+        p2listen2q2: { type: 'text', answers: ['tortilla', 'chilli sauce'] },
+    };
+
+    /* ─── Section Definitions ─── */
+    const SECTIONS_A = [
+        { name: 'Level 1 — Cognitive',     keys: ['p1l1q1','p1l1q2','p1l1q3','p1l1q4','p1l1q5','p1l1q6'] },
+        { name: 'Level 2 — Reasoning',     keys: ['p1l2q1','p1l2q2','p1l2q3','p1l2q4','p1l2q5','p1l2q6'] },
+        { name: 'Level 3 — Memory',        keys: ['p1l3m1','p1l3m2','p1l3m3','p1l3m4','p1l3m5'] },
+        { name: 'Reading Comprehension',   keys: ['p1rc'] },
+    ];
+    const SECTIONS_B = [
+        { name: 'Level 1 — Cognitive',     keys: ['p2l1q1','p2l1q2','p2l1q3','p2l1q4'] },
+        { name: 'Level 2 — Reasoning',     keys: ['p2l2q1','p2l2q2','p2l2q3','p2l2q4','p2l2q5','p2l2q6','p2l2q7'] },
+        { name: 'Level 3 — Memory',        keys: ['p2l3m1','p2l3m2','p2l3m3','p2l3m4','p2l3m5'] },
+        { name: 'Visual Puzzle',           keys: ['p2puzzle'] },
+        { name: 'Listening Exercises',     keys: ['p2listen1q1','p2listen1q2','p2listen2q1','p2listen2q2'] },
+    ];
+
+    // Comparable sections that exist in both parts (by index into SECTIONS_A / B)
+    const COMPARABLE = [
+        { label: 'Cognitive',  iA: 0, iB: 0 },
+        { label: 'Reasoning',  iA: 1, iB: 1 },
+        { label: 'Memory',     iA: 2, iB: 2 },
+    ];
+
+    function checkAnswer(userAnswer, keyEntry) {
+        if (!keyEntry) return false;
+        if (keyEntry.type === 'mcq') return userAnswer.value === keyEntry.answer;
+        const userVal = userAnswer.value.toLowerCase().trim();
+        return keyEntry.answers.some(ans => ans.toLowerCase() === userVal);
+    }
+
+    function scoreSections(answers, answerKey, sections) {
+        const ansMap = {};
+        answers.forEach(a => { ansMap[a.name] = a; });
+        let totalCorrect = 0, totalCount = 0;
+        const sectionResults = sections.map(sec => {
+            let correct = 0;
+            sec.keys.forEach(k => {
+                if (ansMap[k] && checkAnswer(ansMap[k], answerKey[k])) correct++;
+            });
+            totalCorrect += correct;
+            totalCount += sec.keys.length;
+            return { name: sec.name, correct, total: sec.keys.length, pct: Math.round((correct / sec.keys.length) * 100) };
+        });
+        return { correct: totalCorrect, total: totalCount, pct: totalCount ? Math.round((totalCorrect / totalCount) * 100) : 0, sections: sectionResults };
+    }
+
+    function renderBreakdownGrid(containerId, sections, cssClass) {
+        const el = document.getElementById(containerId);
+        el.innerHTML = '';
+        sections.forEach(sec => {
+            const card = document.createElement('div');
+            card.className = 'bd-card';
+            card.innerHTML = `
+                <div class="bd-top">
+                    <span class="bd-name">${sec.name}</span>
+                    <span class="bd-score">${sec.correct}/${sec.total}</span>
+                </div>
+                <div class="bd-bar"><div class="bd-fill ${cssClass}" style="width:${sec.pct}%"></div></div>
+                <div class="bd-pct">${sec.pct}%</div>
+            `;
+            el.appendChild(card);
+        });
+    }
+
+    function renderComparison(secResultsA, secResultsB) {
+        const el = document.getElementById('compareSection');
+        el.innerHTML = '';
+        COMPARABLE.forEach(c => {
+            const sA = secResultsA[c.iA];
+            const sB = secResultsB[c.iB];
+            const row = document.createElement('div');
+            row.className = 'compare-row';
+            row.innerHTML = `
+                <div class="cr-label">${c.label}</div>
+                <div class="cr-bars">
+                    <div class="cr-bar-wrap">
+                        <span class="cr-tag">P1</span>
+                        <div class="cr-track"><div class="cr-fill p1" style="width:${sA.pct}%"></div></div>
+                        <span class="cr-val">${sA.pct}%</span>
+                    </div>
+                    <div class="cr-bar-wrap">
+                        <span class="cr-tag">P2</span>
+                        <div class="cr-track"><div class="cr-fill p2" style="width:${sB.pct}%"></div></div>
+                        <span class="cr-val">${sB.pct}%</span>
+                    </div>
+                </div>
+            `;
+            el.appendChild(row);
+        });
+    }
+
+    function renderInsights(scoreA, scoreB) {
+        const list = document.getElementById('insightList');
+        list.innerHTML = '';
+        const diff = scoreB.pct - scoreA.pct;
+        const items = [];
+
+        if (diff > 0) items.push(`Overall accuracy <strong>improved by ${diff}%</strong> after 40 Hz stimulation.`);
+        else if (diff < 0) items.push(`Overall accuracy <strong>decreased by ${Math.abs(diff)}%</strong> post-stimulation.`);
+        else items.push(`Overall accuracy remained <strong>the same</strong> across both parts.`);
+
+        // Per-section insights
+        COMPARABLE.forEach(c => {
+            const sA = scoreA.sections[c.iA];
+            const sB = scoreB.sections[c.iB];
+            const d = sB.pct - sA.pct;
+            if (d > 10) items.push(`<strong>${c.label}</strong> showed notable improvement (+${d}%) post-stimulation.`);
+            else if (d < -10) items.push(`<strong>${c.label}</strong> performance dropped (${d}%) — may indicate fatigue or question difficulty.`);
+        });
+
+        // Memory-specific
+        const memA = scoreA.sections.find(s => s.name.includes('Memory'));
+        const memB = scoreB.sections.find(s => s.name.includes('Memory'));
+        if (memA && memB) {
+            if (memB.pct > memA.pct) items.push(`<strong>Memory recall</strong> improved post-stimulation (${memA.pct}% → ${memB.pct}%).`);
+            else if (memB.pct < memA.pct) items.push(`<strong>Memory recall</strong> was lower post-stimulation (${memA.pct}% → ${memB.pct}%).`);
+        }
+
+        // Speed
+        const dA = state.phaseAEnd - state.phaseAStart;
+        const dB = state.phaseBEnd - state.phaseBStart;
+        if (dB < dA * 0.85) items.push(`Part 2 was completed <strong>${Math.round((1 - dB/dA) * 100)}% faster</strong> than Part 1.`);
+        else if (dB > dA * 1.15) items.push(`Part 2 took <strong>${Math.round((dB/dA - 1) * 100)}% longer</strong> than Part 1.`);
+
+        items.forEach(html => {
+            const li = document.createElement('li');
+            li.innerHTML = html;
+            list.appendChild(li);
+        });
+    }
+
+    window.finishPhaseB = function () {
+        clearInterval(timerInterval);
+        state.phaseBEnd = Date.now();
+        state.answersB = collectAnswers('screenPhaseB');
+        show('screenDone'); setStep('stepDone');
+
+        const dA = state.phaseAEnd - state.phaseAStart;
+        const dB = state.phaseBEnd - state.phaseBStart;
+
+        // Section-level scoring
+        const scoreA = scoreSections(state.answersA, ANSWER_KEY_A, SECTIONS_A);
+        const scoreB = scoreSections(state.answersB, ANSWER_KEY_B, SECTIONS_B);
+
+        // Overall cards
+        document.getElementById('roScoreA').textContent = scoreA.correct + ' / ' + scoreA.total;
+        document.getElementById('roPctA').textContent   = scoreA.pct + '%';
+        document.getElementById('roTimeA').textContent   = fmtTime(dA);
+        document.getElementById('roScoreB').textContent = scoreB.correct + ' / ' + scoreB.total;
+        document.getElementById('roPctB').textContent   = scoreB.pct + '%';
+        document.getElementById('roTimeB').textContent   = fmtTime(dB);
+
+        // Performance badge
+        const badge = document.getElementById('perfBadge');
+        const diff = scoreB.pct - scoreA.pct;
+        if (diff > 0) { badge.className = 'perf-badge improved'; badge.textContent = '↑ ' + diff + '% improvement post-stimulation'; }
+        else if (diff < 0) { badge.className = 'perf-badge declined'; badge.textContent = '↓ ' + Math.abs(diff) + '% decline post-stimulation'; }
+        else { badge.className = 'perf-badge same'; badge.textContent = '→ No change in accuracy'; }
+
+        // Section breakdowns
+        renderBreakdownGrid('bdGridA', scoreA.sections, 'p1');
+        renderBreakdownGrid('bdGridB', scoreB.sections, 'p2');
+
+        // Comparison bars
+        renderComparison(scoreA.sections, scoreB.sections);
+
+        // Insights
+        renderInsights(scoreA, scoreB);
+
+        // Submit to server
+        fetch("{% url 'submit_survey_game' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                phase_a: { duration_ms: dA, answers: state.answersA, score: { correct: scoreA.correct, total: scoreA.total, pct: scoreA.pct, sections: scoreA.sections } },
+                phase_b: { duration_ms: dB, answers: state.answersB, score: { correct: scoreB.correct, total: scoreB.total, pct: scoreB.pct, sections: scoreB.sections } },
+                stimulation_duration: STIM_DURATION,
+                submitted_at: new Date().toISOString(),
+            }),
+        }).catch(err => console.warn('Submission error:', err));
+    };
+})();
+</script>
+</body>
+</html>

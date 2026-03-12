@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 import json
 import uuid
+from pathlib import Path
 from .models import Patient, TestSession, EEGData, TestResults, Report
 
 def index(request):
@@ -190,6 +191,47 @@ def impact_benefits(request):
 def financial_projection(request):
     """Financial projection analysis"""
     return render(request, 'demo/financial_projection.html')
+
+def _load_audio_manifest():
+    """Load external audio server URLs from the marked manifest file."""
+    manifest_path = Path(__file__).resolve().parent / 'audio_reference_manifest.json'
+    fallback = {
+        'phase_b_40hz_track': 'https://audio-server.example.org/neurohtz/40hz_stimulation_track.mp3',
+        'phase_b_40hz_backup': 'https://audio-server-backup.example.org/neurohtz/40hz_stimulation_track.mp3',
+    }
+    if not manifest_path.exists():
+        return fallback
+    try:
+        with manifest_path.open('r', encoding='utf-8') as fh:
+            data = json.load(fh)
+            return {k: data.get(k, fallback[k]) for k in fallback}
+    except Exception:
+        return fallback
+
+
+def survey_game(request):
+    """Two-phase gamified questionnaire — Phase A (no audio) then Phase B (40 Hz)."""
+    context = {
+        'audio_manifest': _load_audio_manifest(),
+    }
+    return render(request, 'demo/survey_game.html', context)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def submit_survey_game(request):
+    """Receive JSON payload with survey answers from both phases."""
+    try:
+        payload = json.loads(request.body)
+        # Store in session for demo purposes
+        request.session['survey_game_submission'] = payload
+        request.session.modified = True
+        return JsonResponse({'status': 'success', 'message': 'Survey responses recorded.'})
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
 
 def upload_data(request):
     """Upload data page for existing EEG files"""

@@ -31,4 +31,8 @@ urlpatterns = [
     path('guidelines/', views.user_guidelines, name='user_guidelines'),
     path('impact/', views.impact_benefits, name='impact_benefits'),
     path('financial/', views.financial_projection, name='financial_projection'),
+
+    # 40 Hz Stimulation Survey Game
+    path('survey/', views.survey_game, name='survey_game'),
+    path('survey/submit/', views.submit_survey_game, name='submit_survey_game'),
 ]
