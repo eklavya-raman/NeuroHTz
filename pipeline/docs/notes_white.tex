@@ -1,0 +1,282 @@
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{minted}
+\setminted{breaklines, % Break lines automatically
+    breakanywhere, % Allow breaks anywhere
+    fontsize=\small, % Font size for the code
+    frame=single, % Border style for the code block
+    bgcolor=darkbackground, % Background color for the code block
+    linenos, % Display line numbers
+    numbersep=5pt, % Space between line numbers and code
+    label=code-\thecodeblock}
+\usepackage{caption}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins, theorems, listings}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{pgf-pie}
+\usepackage{filecontents}
+\usepackage{hyperref}
+\usepackage{lipsum}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{tocloft}
+\usepackage{xparse}
+\usepackage{chngcntr}
+\usepackage{mathtools}
+\usepackage{thmtools} 
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage{chemfig}
+% For flexible counter manipulation
+
+% Redefine equation numbering to chapter.section.subsection.number
+\counterwithin{equation}{subsection}
+
+\newenvironment{introduction}{
+    \chapter*{Introduction}
+    \addcontentsline{toc}{chapter}{Introduction}
+}{
+    % You can put any ending code here if necessary
+}
+\newenvironment{acknowledgements}{
+    \chapter*{Acknowledgements}
+    \addcontentsline{toc}{chapter}{Acknowledgements}
+}{
+    % You can put any ending code here if necessary
+}
+\newenvironment{references}{
+    \chapter*{References}
+    \addcontentsline{toc}{chapter}{References}
+    \begin{thebibliography}{99} % Start bibliography
+}{
+    \end{thebibliography} % End bibliography
+}
+
+% Ensure equation counter resets with each new subsection
+\renewcommand{\theequation}{\thesubsection.\arabic{equation}}
+
+% Colors
+\usepackage{xcolor}
+\definecolor{whitetext}{HTML}{121212}
+\definecolor{darkbackground}{HTML}{FFFFFF}
+\definecolor{accent3}{HTML}{FF5C00}
+\definecolor{lightcyan}{HTML}{E0FFFF}
+\definecolor{lightgray}{HTML}{D3D3D3}
+\definecolor{accent1}{HTML}{0047AB}
+\definecolor{accent3}{HTML}{6495ED}
+\definecolor{accent3}{HTML}{FF4D00}
+\definecolor{myorange}{HTML}{FFA500}
+\definecolor{mylightblue}{HTML}{ADD8E6}
+\definecolor{mygreen}{HTML}{90EE90}
+\definecolor{definition}{HTML}{924492}
+\definecolor{axiom}{HTML}{E23458}
+
+\pagecolor{darkbackground}
+\color{whitetext}
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+
+% Custom Counters
+\newcounter{mydefinition}[subsection]
+\renewcommand{\themydefinition}{\thesection.\thesubsection.\thesubsubsection.\arabic{mydefinition}}
+\newcounter{myidentity}[subsection]
+\renewcommand{\themyidentity}{\thesubsection.\arabic{myidentity}}
+\newcounter{myproof}[subsection]
+\renewcommand{\themyproof}{\thesubsection.\arabic{myproof}}
+\newcounter{mynote}[subsection]
+\renewcommand{\themynote}{\thesubsection.\arabic{mynote}}
+\newcounter{mycodeblock}[subsection]
+\renewcommand{\themycodeblock}{\thesubsection.\arabic{mycodeblock}}
+\newcounter{myexercise}[subsection]
+\renewcommand{\themyexercise}{\thesubsection.\arabic{myexercise}}
+\newcounter{codeblock}[section]
+\renewcommand{\thecodeblock}{\thesubsection.\arabic{codeblock}}
+\newcounter{myaxiom}[subsection]
+\renewcommand{\themyaxiom}{\thesubsection.\arabic{myaxiom}}
+
+
+\setminted{breaklines, % Break lines automatically
+    breakanywhere, % Allow breaks anywhere
+    fontsize=\small, % Font size for the code
+    frame=single, % Border style for the code block
+    bgcolor=darkbackground, % Background color for the code block
+    linenos, % Display line numbers
+    numbersep=5pt, % Space between line numbers and code
+    label=code-\thecodeblock}
+
+% Custom Environments
+\tcbuselibrary{listingsutf8}
+\newtcolorbox[use counter=mydefinition, number within=subsection]{mydefinition}[2][]{colback=darkbackground, colframe=definition, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, parbox=false, title=Definition~\themydefinition, before upper={\textbf{#2}\\}, #1}
+\newtcolorbox[use counter=myidentity, number within=subsection]{myidentity}[1][]{colback=darkbackground, colframe=myorange, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, before skip=10pt, after skip=10pt, parbox=false, title=Identity~\themyidentity, #1}
+\newtcolorbox[use counter=myproof, number within=subsection]{myproof}[1][]{colback=darkbackground, colframe=mygreen, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, before skip=10pt, after skip=10pt, parbox=false, title=Proof~\themyproof, #1}
+\newtcolorbox[use counter=mynote, number within=subsection]{mynote}[1][]{colback=darkbackground, colframe=accent3, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, before skip=10pt, after skip=10pt, parbox=false, title=Note~\themynote, #1}
+\newtcolorbox[use counter=mycodeblock, number within=subsection]{mycodeblock}[1][]{colback=darkbackground, colframe=accent3, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, before skip=10pt, after skip=10pt, parbox=false, title=Code~\themycodeblock, #1}
+\newtcolorbox[use counter=myexercise, number within=subsection]{myexercise}[1][]{colback=darkbackground, colframe=accent1, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, before skip=10pt, after skip=10pt, parbox=false, title=Exercise~\themyexercise, #1}
+\newtcolorbox[use counter=myaxiom, number within=subsection]{myaxiom}[1][]{colback=darkbackground, colframe=axiom, fonttitle=\bfseries, breakable=true, enhanced jigsaw, sharp corners, before skip=10pt, after skip=10pt, parbox=false, title=Axioms ~\themyaxiom, #1}
+% Custom Theorem-like Environments
+\newtheorem{mytheorem}{Theorem}[chapter]
+\newtheorem{mydefinitiontheorem}{Definition}[subsection]
+\newtheorem{myexercisetheorem}{Exercise}[subsection]
+
+% Syntax Highlighting
+\usemintedstyle{monokai}
+\setminted{
+    bgcolor=darkbackground,
+    style=monokai,
+    linenos,
+    breaklines,
+    fontsize=\small
+}
+
+% Custom Title Page with TikZ Decorations and Logo
+\newcommand{\customtitle}[6]{
+    \begin{titlepage}
+        \noindent
+        \begin{tikzpicture}[remember picture,overlay]
+            \begin{scope}[blend mode=soft light]
+                \fill[accent1] (current page.south west) rectangle (current page.north east);
+                \fill[accent3] (0.2*\paperwidth,0.2*\paperheight) -- (current page.north east) -- (current page.north west) -- cycle;
+                \fill[accent3] (current page.south west) -- (current page.north west) -- (0.8*\paperwidth,0.8*\paperheight) -- cycle;
+                \draw[line width=1mm, accent3, opacity=0.5] (current page.south west) -- (current page.north east);
+                \draw[line width=1mm, accent3, opacity=0.5] (current page.south east) -- (current page.north west);
+            \end{scope}
+            % Logo
+            \node [anchor=north, yshift=-8.2cm] at (current page.north) {
+                \includegraphics[width=0.5\textwidth]{#6}
+            };
+            % Title and Subtitle in cyan box
+            \node [fill=accent3, fill opacity=0.8, text opacity=1, inner sep=1cm, anchor=north, text width=\paperwidth, minimum height=0.15\paperheight, align=center] at ([yshift=-2cm]current page.center) {
+                \Huge\textbf{\textit{#1}}\\[0.5cm]
+                \Large\textbf{\textit{#5}}
+            };
+            % Author, Subject, and Date in royal blue box
+            \node [fill=accent3, fill opacity=0.8, text opacity=1, inner sep=0.5cm, anchor=north, text width=\textwidth-8cm, align=center] at ([yshift=-6.45cm]current page.center) {
+                \Large\textbf{\textit{#2}}\\[0.5cm]
+                \normalsize\textbf{#3}\\[0.5cm]
+                \normalsize\textbf{#4}
+            };
+        \end{tikzpicture}
+    \end{titlepage}
+}
+
+% Custom Chapter Page with TikZ Decorations
+\newcommand{\chapterpage}{
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{scope}[blend mode=soft light]
+            \fill[accent1] (0,0) rectangle (\paperwidth,\paperheight);
+            \fill[accent3] (0.2*\paperwidth,0.2*\paperheight) -- (\paperwidth,0.8*\paperheight) -- (\paperwidth,0) -- cycle;
+            \fill[accent3] (0,0) -- (\paperwidth,0) -- (0.8*\paperwidth,0.8*\paperheight) -- cycle;
+        \end{scope}
+    \end{tikzpicture}
+}
+
+%Custom math commands
+\newcommand{\intg}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\sumg}[3]{\sum_{#1}^{#2} #3}
+\newcommand{\diff}[2]{\frac{d #1}{d #2}}
+\newcommand{\pdiff}[2]{\frac{\partial #1}{\partial #2}} % Partial differential
+\newcommand{\limit}[3]{\lim_{#1 \to #2} #3} % Limit
+\newcommand{\infseries}[2]{\sum_{#1}^{\infty} #2} % Infinite series
+\newcommand{\mat}[1]{\begin{matrix} #1 \end{matrix}} % Matrix
+\newcommand{\pmat}[1]{\begin{pmatrix} #1 \end{pmatrix}} % Parentheses matrix
+\newcommand{\bmat}[1]{\begin{bmatrix} #1 \end{bmatrix}} % Bracket matrix
+\newcommand{\mycases}[1]{\left\{\begin{array}{lr}
+        x(n), & \text{for } 0\leq n\leq 1\\
+        x(n-1), & \text{for } 0\leq n\leq 1\\
+        x(n-1), & \text{for } 0\leq n\leq 1
+        \end{array}\right\}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor} % Floor function
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil} % Ceiling function
+\newcommand{\abs}[1]{\left| #1 \right|} % Absolute value
+\newcommand{\norm}[1]{\left\| #1 \right\|} % Norm
+\newcommand{\set}[1]{\left\{ #1 \right\}} % Set
+\newcommand{\angg}[1]{\left\langle #1 \right\rangle} % Angle
+\newcommand{\eqn}[1]{\begin{equation} #1 \end{equation}} % Equation
+\newcommand{\eqnarrayx}[1]{\begin{eqnarray} #1 \end{eqnarray}} % Equation array
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\forallx}{\forall x \in \mathbb{R}}
+\newcommand{\existsx}{\exists x \in \mathbb{R}}
+\newcommand{\iintd}[1]{\iint\!#1\,dx\,dy}
+\newcommand{\iiintd}[1]{\iiint\!#1\,dx\,dy\,dz}
+\newcommand{\nint}[3]{\int_{#1}^{#2}\!#3\,dx}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\nd}{\wedge}
+\newcommand{\orr}{\vee}
+\newcommand{\union}{\cup}
+\newcommand{\intersect}{\cap}
+\newcommand{\megaunion}[2]{\bigcup\limits_{#1}^{#2}}
+\newcommand{\megaintersect}[2]{\bigcap\limits_{#1}^{#2}}
+\newcommand{\emphasise}[1]{\textbf{\textit{#1}}} % Emphasize text
+\newcommand{\underemphasise}[1]{\underline{\textbf{\textit{#1}}}} % Custom title formatting
+
+% Custom Headers and Footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+
+% Section Formatting
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent3}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent3}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{accent3}}
+  {\thesubsubsection}{1em}{}
+
+\newcommand{\settitle}[1]{
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent3,
+    filecolor=accent3,
+    urlcolor=accent3,
+    citecolor=accent3,
+    pdftitle={#1},
+    pdfpagemode=FullScreen
+}}
+\newcounter{example}[section] % Reset example counter with each section
+\renewcommand{\theexample}{\thesubsection.\arabic{example}} % Customize numbering
+
+\newenvironment{example}[1][]{%
+    \refstepcounter{example}% Increment example counter
+    \noindent\textit{\textbf{Example~\theexample~ - #1}}
+    \par\nobreak % Print the title and ensure no page break% Add vertical space
+    \noindent % No indentation for the first paragraph
+}{% % Ensure a new paragraph ends the environment
+    \par 
+    \noindent
+}
+
+\newcounter{solution}[chapter] % Reset example counter with each section
+\renewcommand{\thesolution}{\thechapter.\arabic{solution}} % Customize numbering
+
+\newenvironment{solution}[1][]{%
+\refstepcounter{solution}
+\textit{\textbf{Solutions~\thesolution:}} \textit{#1}\par\nobreak
+\vspace{0.5\baselineskip}
+\noindent}{%
+\par \vspace{0.9\baselineskip} \noindent}
+\newcounter{exercise}[chapter] % Reset exercise counter with each section
+\renewcommand{\theexercise}{\thechapter.\arabic{exercise}} % Customize numbering
+\newenvironment{exercise}[1][]{%
+    \refstepcounter{exercise}% Increment exercise counter
+    \noindent\underline{\textbf{Exercise~\theexercise:}}
+}{% % Ensure a new paragraph ends the environment
+    }
+\newcounter{corollary}[mytheorem] % Reset corollary counter with each theorem
+\newenvironment{corollary}[1][]{%
+    \refstepcounter{corollary}
+    \noindent\underline{\textbf{Corollary~\themytheorem.\thecorollary:}} \textit{#1}\par\nobreak
+    \vspace{0.5\baselineskip}
+    \noindent
+}{
+}

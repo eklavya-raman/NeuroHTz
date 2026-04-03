@@ -1,0 +1,662 @@
+\documentclass[openany]{book}
+\input{notes_white}
+\usepackage{mathtools}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,shapes.misc,fit,calc}
+\settitle{Proof of Concept - NeuroHTz}
+\newcommand{\definitionbox}[1]{%
+\par\noindent\fbox{%
+\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{#1}%
+}\par
+}
+\providecommand{\imageplaceholder}[3]{
+\begin{figure}[htpb]
+    \centering
+    \fbox{\begin{minipage}[c][#2][c]{0.9\textwidth}
+        \centering
+        \Large #1\\[4pt]
+        \normalsize Replace this placeholder with final figure/image.
+    \end{minipage}}
+    \caption{#3}
+\end{figure}}
+\begin{document}
+\title{\Large{\underemphasise{Proof of Concept - NeuroHTz}} \\ \vspace{5pt}
+\large{Early Detection of Alzheimer's using Electroencephalography (EEG) and Machine Learning}}
+\author{Eklavya Raman \\ \vspace{5pt} er24ms024@iiserkol.ac.in \\ 
+\and Aman Mahnoori \\ \vspace{5pt} am24ms017@iiserkol.ac.in \\ 
+\and Himanshu Mech \\ \vspace{5pt} hm24ms004@iiserkol.ac.in \\
+\and Manjishta Debnath \\ \vspace{5pt} md24ms117@iiserkol.ac.in \\
+\and Sourodeep Dey \\ \vspace{5pt} sd24ms011@iiserkol.ac.in \\
+\and Akshat Mishra \\ \vspace{5pt} am24ms122@iiserkol.ac.in \\
+\and Manideep Mondal \\ \vspace{5pt} mm24ms008@iiserkol.ac.in}
+\date{\today}
+\maketitle
+\tableofcontents
+
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+    Alzheimer's disease is a progressive neurodegenerative disorder that primarily affects memory and cognitive function. Currently, accurate diagnosis of Alzheimer's disease is often made at later stages when significant brain damage has already occurred. Since there is no way to cure or halt the progression of the disease, early detection is crucial for managing symptoms and improving quality of life. If Alzheimer's can be detected at an early stage, patients can receive timely interventions, such as medications and lifestyle changes, that may slow down the progression of the disease. Additionally, early detection allows patients and their families to plan for the future and make informed decisions about care and support. To diagnose Alzheimer's disease, various methods are used, including clinical assessments, neuroimaging techniques, and biomarker analysis. However, these methods can be expensive, invasive, and may not always provide accurate results. \\ \\ The limitations of current diagnostic methods highlight the need for alternative approaches that are non-invasive, cost-effective, and accurate. In a country like India, where the healthcare infrastructure may be limited, especially in rural areas, there is a pressing need for accessible and affordable diagnostic tools for Alzheimer's and possibly other neurodegenerative diseases. Electroencephalography (EEG) is a non-invasive and cost-effective method that measures electrical activity in the brain. Recent research has shown that EEG can be used to detect early signs of Alzheimer's disease by analyzing patterns of brain activity \cite{cassani2020review, jeong2004eeg}. However, interpreting EEG data manually requires expertise and can be time-consuming. This is where machine learning comes into play. Machine learning algorithms can analyze large datasets of EEG recordings to identify patterns and features that are indicative of Alzheimer's disease. By training machine learning models on EEG data from patients with Alzheimer's and healthy controls, we can develop predictive models that can assist in the early detection of the disease. \\ \\
+    We employ recent research in neuroscience, which provides proof that EEG can be used to detect early signs of Alzheimer's disease. Recent research also shows that 40Hz gamma oscillations are disrupted in Alzheimer's Disease, and that the steady state response power at 40Hz is a potential biomarker for early detection \cite{iaccarino2016gamma}. We will leverage this and other relevant findings to guide our feature selection and model development process. Combining multiple approaches such as EEG data with and without 40Hz stimulation, and using different machine learning algorithms will allow us to develop a robust and accurate early detection tool for Alzheimer's disease. We also propose the use of cutting edge machine learning techniques and fuzzy logic to enhance the data pipeline, including artifact removal, feature extraction, and increase interpretability of the model. \\\\
+    Since the main goal of this project is to develop a early detection tool for Alzheimer's disease that is accessible and affordable, our focus will be to use lightweight machine learning models that can be deployed on low-resource devices, such as smartphones or tablets. This will ensure that the tool can be used in a wide range of settings, including rural areas where access to healthcare may be limited. In this proof of concept, we will explore the feasibility of using EEG data and machine learning algorithms for the early detection of Alzheimer's disease. We will evaluate the performance of different machine learning models and identify key features in the EEG data that are associated with Alzheimer's disease. The ultimate goal is to develop a prototype tool that can be further refined and validated in clinical settings for widespread use in early detection of Alzheimer's disease, which would include both hardware and software components. We also aim to create a detailed, annotated dataset of EEG recordings from patients with Alzheimer's and other neurodegenerative diseases with and without 40Hz stimulation and make it open access, which can be used for future research and development in this field. By leveraging the power of machine learning and EEG data, we hope to contribute to the early detection and management of Alzheimer's disease, ultimately improving the lives of patients and their families.
+
+
+\chapter{Proof of Concept}
+\section{Abstract}
+    In this proof of concept, we explore the feasibility of using electroencephalography (EEG) data and machine learning algorithms for the early detection of Alzheimer's disease. We leverage recent research that shows disruptions in 40Hz gamma oscillations in Alzheimer's patients and use this as a potential biomarker for early detection. We develop a data pipeline that includes artifact removal, feature extraction, and model development using lightweight machine learning algorithms suitable for deployment on low-resource devices. Our preliminary research indicates that EEG-based features can effectively differentiate between Alzheimer's patients and healthy controls, demonstrating the potential of this approach for early detection. We also propose a protocol for collecting and annotating EEG data from patients with Alzheimer's and other neurodegenerative diseases, which can be used for future research and development in this field. The ultimate goal of this proof of concept is to lay the groundwork for developing an accessible and affordable tool for early detection of Alzheimer's disease, particularly in resource-limited settings. \\
+    Research shows the remarkable capability of machine learning algorithms to classify EEG data with high accuracy, making it a promising approach for early detection of Alzheimer's disease. The limitations of this, however, include the lack of longitudinal data and the need for large, annotated datasets to train machine learning models effectively. Additionally, while EEG is a non-invasive and cost-effective method, it can be susceptible to noise and artifacts, which can affect the accuracy of the models. We propose to address the limitation of longitudinal data by designing a protocol for collecting EEG data from patients at different stages of Alzheimer's disease, as well as from healthy controls. Using fuzzy logic, we can train machine learning models to handle the uncertainty and variability in EEG data, which can improve the robustness and interpretability of the models. Therefore, we might be able to develop a tool which is able to provide not only a binary classification of Alzheimer's vs. healthy control, but also a probabilistic assessment of the likelihood of Alzheimer's disease, which can be valuable for early detection and clinical decision-making. Potentially, this approach could also identify the stage of Alzheimer's disease in a patient, which is the main limitation with current studies due to the lack of longitudinal data. We will compare the performance of different models and feature sets to identify the most effective approach for early detection of Alzheimer's disease using EEG data.
+\section{Methodology}
+The NeuroHTz system follows a structured and multidisciplinary methodology that integrates neuroscience, biomedical hardware, signal processing, and machine learning to enable early-stage detection of Alzheimer's disease. The methodology is designed as a continuous pipeline, beginning with controlled neural stimulation and EEG acquisition, followed by signal preprocessing, feature extraction, machine learning analysis, and final risk assessment. \\
+\subsection{Neural Stimulation and EEG Acquisition}
+We conduct two types of EEG recordings: one with 40Hz auditory stimulation and one without any stimulation. Gamma oscillations, particularly at 40Hz, have been shown to be disrupted in Alzheimer's disease \cite{martorell2019gamma}. Providing 40Hz auditory stimulation can enhance gamma oscillations in the brain, which may help to reveal differences in neural activity between Alzheimer's patients and healthy controls \cite{iaccarino2016gamma}. This allows us to capture both the baseline neural activity and the brain's response to stimulation, providing a richer dataset for analysis. Further, the 40Hz data is shown to increase the accuracy of machine learning models in classifying Alzheimer's disease, as it provides a more distinct signal that can be used to differentiate between patients and controls \cite{acharya2018automated}. Comparing the results from both types of recordings will help us train models that can differentiate more effectively between Alzheimer's patients and healthy controls, both with and without stimulation. This dual approach allows us to leverage the potential benefits of 40Hz stimulation while also ensuring that our models can perform well even in the absence of stimulation, which is important for real-world applications where stimulation may not always be feasible. \\
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=cyan!5},
+        arrow/.style={->, thick}
+    ]
+        \node[box] (no_stim) at (0, 2) {Baseline \\ (No Stim)};
+        \node[box] (stim) at (0, 0) {40Hz Audio \\ Stimulation};
+        \node[box] (brain) at (3.5, 1) {Subject \\ Brain};
+        \node[box] (eeg) at (7, 1) {EEG \\ Headset};
+        \node[box] (adc) at (10.5, 1) {Analog \\ Front-End};
+        \node[box] (mcu) at (10.5, -1) {ESP32 \\ Wireless};
+        \node[box] (pc) at (7, -1) {Processing \\ Unit};
+
+        \draw[arrow] (no_stim) -- (brain);
+        \draw[arrow] (stim) -- (brain);
+        \draw[arrow] (brain) -- (eeg);
+        \draw[arrow] (eeg) -- (adc);
+        \draw[arrow] (adc) -- (mcu);
+        \draw[arrow] (mcu) -- (pc);
+    \end{tikzpicture}
+    \caption{Hardware flow diagram illustrating auditory stimulation and wireless EEG acquisition.}
+    \label{fig:eeg_hardware}
+\end{figure}
+
+Following stimulation, the system performs EEG signal acquisition using the custom-designed wearable headset. The hardware setup includes dry Ag/AgCl electrodes mounted on a headband, an analog front-end for amplification and filtering, and an ADS1299-based acquisition module for high-resolution digitization. The electrodes are strategically placed over frontal and temporal regions of the brain, which are most affected in the early stages of Alzheimer's disease. We shall use the International 10-20 system for electrode placement, ensuring consistency across recordings. The EEG signals are sampled at a rate of 500 Hz to capture the relevant frequency bands, including the gamma band around 40Hz. The analog front-end amplifies the microvolt-level EEG signals and applies essential filtering, including high-pass, low-pass, and notch filters, to isolate relevant brain activity and suppress noise. The digitized signals are then transmitted wirelessly via the ESP32 microcontroller to a processing unit for further analysis. We shall discuss the hardware design and specifications in detail in the subsequent sections, including the choice of components, circuit design, and data acquisition protocols.  \\
+\subsection{Signal Preprocessing}
+The raw EEG data acquired from the headset is often contaminated with various artifacts, such as eye blinks, muscle movements, and electrical noise. To ensure the quality of the data for analysis, we implement a comprehensive signal preprocessing pipeline. 
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=orange!5},
+        arrow/.style={->, thick}
+    ]
+        \node[box] (raw) at (0, 0) {Raw EEG \\ Data};
+        \node[box] (bp) at (3.5, 0) {Bandpass Filter \\ (1-100 Hz)};
+        \node[box] (notch) at (7.5, 0) {Notch Filter \\ (50/60 Hz)};
+        \node[box] (ica) at (11.5, 0) {Artifact Removal \\ (e.g., ICA)};
+        \node[box] (epoch) at (11.5, -2) {Epoching \& \\ Segmentation};
+        \node[box] (clean) at (7.5, -2) {Clean EEG \\ Ready for Analysis};
+
+        \draw[arrow] (raw) -- (bp);
+        \draw[arrow] (bp) -- (notch);
+        \draw[arrow] (notch) -- (ica);
+        \draw[arrow] (ica) -- (epoch);
+        \draw[arrow] (epoch) -- (clean);
+    \end{tikzpicture}
+    \caption{Signal preprocessing pipeline for artifact removal and cohort segmentation.}
+    \label{fig:preprocessing}
+\end{figure}
+
+This includes bandpass filtering to isolate the relevant frequency bands (e.g., 1-100 Hz), notch filtering to remove power line noise (e.g., 50/60 Hz), and artifact removal techniques such as Independent Component Analysis (ICA) to separate and eliminate artifacts from the neural signals. We also explore the use of fuzzy logic-based approaches for artifact removal, which can help to handle the uncertainty and variability in EEG data more effectively and accurately. The preprocessed EEG data is then segmented into epochs corresponding to the stimulation periods and baseline periods for further analysis. This preprocessing step is crucial for improving the signal-to-noise ratio and ensuring that the features extracted from the EEG data are representative of the underlying neural activity related to Alzheimer's disease. We discuss the specific preprocessing techniques, parameters, and implementation details in the subsequent sections, along with the rationale for our choices and their impact on the quality of the data for machine learning analysis. \\
+\subsection{Feature Extraction}
+After preprocessing the EEG data, we extract relevant features that can be used for machine learning analysis. These features include time-domain features (e.g., mean, variance, skewness), frequency-domain features (e.g., power spectral density, band power in specific frequency bands), and time-frequency features (e.g., wavelet coefficients). 
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=teal!5},
+        arrow/.style={->, thick, -stealth}
+    ]
+        \node[box, fill=blue!10] (clean) at (5, 2) {Clean EEG Epochs};
+        
+        \node[box] (feat1) at (-0.5, 0) {Time-Domain \\ (Mean, Var)};
+        \node[box] (feat2) at (3.0, 0) {Freq-Domain \\ (Band Power)};
+        \node[box] (feat3) at (6.5, 0) {Connectivity \\ (Coherence)};
+        \node[box] (feat4) at (10.5, 0) {Time-Freq \\ (CWT Scalogram)};
+
+        \draw[arrow] (clean) -- (feat1);
+        \draw[arrow] (clean) -- (feat2);
+        \draw[arrow] (clean) -- (feat3);
+        \draw[arrow] (clean) -- (feat4);
+    \end{tikzpicture}
+    \caption{Extracted feature domains from the preprocessed EEG signal.}
+    \label{fig:features_main}
+\end{figure}
+
+We also focus on extracting features related to gamma oscillations, particularly around the 40Hz frequency, as disruptions in this band have been associated with Alzheimer's disease. Additionally, we explore the use of connectivity measures (e.g., coherence, phase-locking value) to capture the interactions between different brain regions, which may provide further insights into the neural changes associated with Alzheimer's disease. The extracted features are then normalized and organized into a feature matrix that serves as input for the machine learning models. We discuss the specific features extracted, their relevance to Alzheimer's disease, and the methods used for feature extraction in detail in the subsequent sections.\footnote{See \hyperref[app:A]{Appendix A: Features and Dimensionality Reduction}, \hyperref[sec:feat_extract]{Section \ref*{sec:feat_extract}} for more details on methodologies like CWT conversion.} We also explore the use of fuzzy features such as the Katz Fractal Dimension among others, which can capture the complexity of EEG signals and may provide additional discriminatory power for classifying Alzheimer's. \\
+We further convert the raw signal data into a more interpretable and compact form using dimensionality reduction techniques such as Principal Component Analysis (PCA) or t-Distributed Stochastic Neighbor Embedding (t-SNE).\footnote{See \hyperref[app:A]{Appendix A}, \hyperref[sec:dim_red]{Section \ref*{sec:dim_red}} for a detailed mathematical breakdown of PCA and t-SNE.} This helps to reduce the dimensionality of the feature space while retaining the most important information, which can improve the performance of machine learning models and reduce the risk of overfitting. We also explore the use of fuzzy logic-based feature selection methods to identify the most relevant features for classification, which can enhance the interpretability and robustness of our models. \\
+Finally, we convert raw EEG data into a visual representation using CWT (Continuous Wavelet Transform) scalograms, which can be used as input for convolutional neural networks (CNNs) and transformer based models. This hybrid approach allows us to leverage both traditional machine learning techniques on extracted features and deep learning techniques on raw data representations, providing a comprehensive analysis of the EEG data for early detection of Alzheimer's disease. We discuss the specific methods used for feature extraction, dimensionality reduction, and visual representation in detail in the subsequent sections, along with their rationale and impact on the performance of our machine learning models. \\
+\subsection{Machine Learning Analysis}
+We propose a comprehensive approach for machine learning analysis that leverages traditional machine learning algorithms, deep learning techniques, and advanced fuzzy learning approaches. This multi-tiered modeling strategy ensures both high accuracy on complex neural patterns and robustness against data uncertainty \cite{oh2019deep, jang1993anfis}.
+
+\subsubsection{Traditional and Deep Learning Models}
+For the traditional machine learning approach, we explore algorithms such as Support Vector Machines (SVM), Random Forests, and Gradient Boosting Machines, which are known for their effectiveness in classification tasks based on engineered features. We train these models on extracted numeric features (time, frequency, connectivity) and evaluate performance using accuracy, precision, recall, and F1-score with cross-validation.
+
+For the deep learning approach, we utilize Convolutional Neural Networks (CNNs) and transformer-based models that take CWT scalograms as direct input \cite{lawhern2018eegnet}. CNNs effectively capture spatial patterns in time-frequency images, while transformer models capture long-range dependencies across EEG sequences \cite{craik2019review}. We specifically emphasize the Vision Transformer (ViT) architecture \cite{dosovitskiy2021vit, song2022eegtransformer}, which leverages a global self-attention mechanism superior to traditional CNNs in identifying complex, non-local neural signatures that are characteristic of Alzheimer's early onset.
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=purple!5},
+        arrow/.style={->, thick}
+    ]
+        \node[box] (scalogram) at (0, 1.5) {CWT Scalogram \\ Images};
+        \node[box] (deep) at (4, 1.5) {Deep Learning \\ (ViT / CNN)};
+        
+        \node[box] (numeric) at (0, -1.5) {Numeric Features \\ (Time/Freq/Conn.)};
+        \node[box] (trad) at (4, -1.5) {Traditional ML \\ (SVM / RF)};
+        
+        \node[box, fill=green!10] (prediction) at (8, 0) {Base Probability \\ Predictions};
+
+        \draw[arrow] (scalogram) -- (deep);
+        \draw[arrow] (numeric) -- (trad);
+        \draw[arrow] (deep) -- (prediction);
+        \draw[arrow] (trad) -- (prediction);
+    \end{tikzpicture}
+    \caption{Base machine learning architecture leveraging deep learning for visual inputs and traditional models for numeric features.}
+    \label{fig:ml_analysis_base}
+\end{figure}
+
+\subsubsection{Fuzzy Learning Approaches}
+EEG data is inherently noisy and highly variable across different subjects and environmental conditions. To address this uncertainty, we implement fuzzy learning approaches natively into the analysis pipeline. We utilize Fuzzy Decision Trees (FDT) and Adaptive Neuro-Fuzzy Inference Systems (ANFIS) \cite{jang1993anfis}. These models do not just draw hard decision boundaries; instead, they map extracted features into fuzzy sets representing degrees of anomaly (e.g., "Mildly Abnormal", "Significantly Disrupted").
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=magenta!5},
+        arrow/.style={->, thick}
+    ]
+        \node[box] (fuzzy_feat) at (0, 0) {Fuzzy Features \\ (e.g., Katz FD)};
+        \node[box] (fuzzification) at (4, 0) {Fuzzification \\ (Membership Maps)};
+        \node[box] (anfis) at (8, 0) {Neuro-Fuzzy \\ Inference (ANFIS)};
+        \node[box, fill=green!10] (fuzzy_out) at (12, 0) {Fuzzy Risk \\ Weighting};
+
+        \draw[arrow] (fuzzy_feat) -- (fuzzification);
+        \draw[arrow] (fuzzification) -- (anfis);
+        \draw[arrow] (anfis) -- (fuzzy_out);
+    \end{tikzpicture}
+    \caption{Pipeline of the fuzzy learning approach dealing with intrinsic EEG signal uncertainty.}
+    \label{fig:fuzzy_learning}
+\end{figure}
+
+By integrating fuzzy learning, our system computes a continuous spectrum of risk rather than a simple binary output, mitigating the risk of misclassification due to boundary-case physiological noise.\footnote{See \hyperref[app:B]{Appendix B: Fuzzy Logic}, \hyperref[sec:overview_fuzzy]{Section \ref*{sec:overview_fuzzy}} for an introduction to Fuzzy Sets, FCM Clustering, and Fuzzy Features.}
+
+\subsubsection{Hybrid Model Data Interpretation}
+To consolidate the diverse outputs from our traditional, deep, and fuzzy models, we introduce a Hybrid Model Interpretation step. This interpretation engine leverages an ensemble mechanism to aggregate the predictions. The deterministic probabilities from the ViT and SVM models are cross-referenced with the fuzzy risk weightings generated by the ANFIS system.\footnote{See \hyperref[app:C]{Appendix C: Hybrid Model Interpretation}, \hyperref[sec:ensemble]{Section \ref*{sec:ensemble}} for mathematical formulation of the dynamic ensemble aggregation.}
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=teal!10},
+        arrow/.style={->, thick}
+    ]
+        \node[box, fill=green!10] (base_pred) at (0, 1.5) {Base ML \\ Predictions};
+        \node[box, fill=green!10] (fuzzy_risk) at (0, -1.5) {Fuzzy Risk \\ Weightings};
+        
+        \node[box] (ensemble) at (4, 0) {Hybrid Ensemble \\ Aggregator};
+        \node[box] (interp) at (8, 0) {Diagnostic \\ Interpretation};
+        \node[box, fill=yellow!10] (ui) at (12, 0) {Clinical UI \\ Dashboard};
+
+        \draw[arrow] (base_pred) -- (ensemble);
+        \draw[arrow] (fuzzy_risk) -- (ensemble);
+        \draw[arrow] (ensemble) -- (interp);
+        \draw[arrow] (interp) -- (ui);
+    \end{tikzpicture}
+    \caption{Hybrid data interpretation engine merging base deterministic models with fuzzy logic, flowing directly into the UI dashboard.}
+    \label{fig:hybrid_interpretation}
+\end{figure}
+
+The ensemble aggregator effectively functions as an Explainable AI (XAI) layer. It analyzes which features—be it the 40Hz spatial scalogram pattern or the fuzzy temporal variation—drove the final decision. This interpreted data is formatted into easily digestible metrics and pushed directly to the Clinical UI Dashboard, ensuring that healthcare providers receive both a definitive risk score and a clear, logical breakdown of the underlying neural anomalies.\footnote{See \hyperref[app:C]{Appendix C}, \hyperref[sec:xai]{Section \ref*{sec:xai}} and \hyperref[sec:dashboard_integration]{Section \ref*{sec:dashboard_integration}} for more on Explainable AI (SHAP/LIME) and Dashboard UI workflow.}
+
+\subsection{Risk Assessment and Clinical Decision Support}
+The final output of our machine learning analysis is a risk assessment for Alzheimer's disease, which can be used to support clinical decision-making. We propose to provide not only a binary classification of Alzheimer's vs. healthy control but also a probabilistic assessment of the likelihood of Alzheimer's disease, which can be valuable for early detection and clinical decision-making. 
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=yellow!10},
+        arrow/.style={->, thick}
+    ]
+        \node[box] (ml) at (0, 0) {ML Model \\ Output};
+        \node[box] (fuzzy) at (4, 0) {Fuzzy Logic \\ Decision System};
+        \node[box] (risk) at (8, 0) {Probabilistic \\ Risk Score};
+        \node[box] (dashboard) at (12, 0) {Clinical Web \\ Dashboard};
+
+        \draw[arrow] (ml) -- (fuzzy);
+        \draw[arrow] (fuzzy) -- (risk);
+        \draw[arrow] (risk) -- (dashboard);
+    \end{tikzpicture}
+    \caption{Clinical decision support workflow transforming binary model outputs into probabilistic clinical risk scores.}
+    \label{fig:clinical_decision}
+\end{figure}
+
+This probabilistic assessment can help clinicians to identify patients who are at high risk of developing Alzheimer's disease and may benefit from further diagnostic testing or early interventions. We also explore the use of explainable AI techniques to enhance the interpretability of our models, allowing clinicians to understand the key features and patterns in the EEG data that are driving the predictions. We use empirical evidence from our machine learning analysis to identify the most important features and patterns in the EEG data that are associated with Alzheimer's disease, and we present these findings in a way that is accessible and informative for clinicians. We also propose the use of fuzzy logic-based decision support systems that can provide recommendations for further diagnostic testing or early interventions based on the risk assessment, which can enhance the clinical utility of our tool for early detection of Alzheimer's disease. We discuss the potential applications of our risk assessment and clinical decision support system in real-world clinical settings, particularly in resource-limited settings where access to healthcare may be limited. We also explore the ethical considerations and implications of using machine learning-based tools for early detection of Alzheimer's disease, including issues related to privacy, informed consent, and potential biases in the data and models. \\ 
+We propose a user friendly interface for clinicians to interact with our risk assessment and clinical decision support system. This interface will allow clinicians to input patient data, view the results of the machine learning analysis, and receive recommendations for further diagnostic testing or early interventions based on the risk assessment. We will design the interface to be intuitive and accessible, ensuring that it can be easily used by clinicians with varying levels of technical expertise. We will also provide training and support materials to help clinicians understand how to use the tool effectively and interpret the results in a clinical context. The ultimate goal is to develop a tool that can be seamlessly integrated into clinical workflows for early detection of Alzheimer's disease, particularly in resource-limited settings where access to healthcare may be limited. \\
+Since there is a lack of longitudinal data to support the ability of our proposed tool to provide definite diagnosis, it must be noted that the tool is intended to provide a risk assessment rather than a definitive diagnosis of Alzheimer's disease. The probabilistic assessment provided by our machine learning models can help clinicians to identify patients who are at high risk of developing Alzheimer's disease and may benefit from further diagnostic testing or early interventions. However, it is important to emphasize that the tool is not intended to replace clinical judgment or diagnostic testing, but rather to serve as a complementary tool that can assist clinicians in making informed decisions about patient care. We will clearly communicate the limitations of our tool and the importance of using it in conjunction with other clinical assessments and diagnostic tests for Alzheimer's disease. We also propose to conduct further research and validation studies to evaluate the performance of our tool in real-world clinical settings and to refine our models based on longitudinal data as it becomes available. \\
+
+\subsection{Summary of Methodology}
+The methodology of the NeuroHTz diagnostic system integrates several distinct domains, progressing linearly from hardware acquisition to clinical decision-making. First, neural stimulation and EEG acquisition capture both baseline and 40Hz auditory-evoked neural responses. Next, robust signal preprocessing isolates the neural signals from environmental and physiological artifacts. Third, an exhaustive feature extraction strategy pulls numerical statistical data, connectivity metrics, and complex CWT scalograms from the time-series signal. This multi-modal data is fed into a hybrid machine learning architecture that pairs deep learning on visual scalograms (via Vision Transformers) with traditional modeling on statistical features. Finally, a clinical decision support system leverages fuzzy logic to aggregate binary and continuous deterministic outputs into a simple, probabilistic clinical risk score that is easily interpretable by healthcare providers on a dashboard.
+
+\begin{figure}[htpb]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm and 1cm,
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=0.8cm, fill=blue!5, text width=2.5cm, font=\scriptsize},
+        title/.style={font=\bfseries\small, align=center, text width=2.8cm},
+        arrow/.style={->, thick},
+    ]
+
+        % Group 1: Acquisition
+        \node[title] (g1) at (0, 0) {1. Acquisition};
+        \node[box, fill=cyan!5] (g1_1) at (0, -1) {Baseline / 40Hz \\ Audio Series};
+        \node[box, fill=cyan!5] (g1_2) at (0, -2) {Dry Electrode \\ Headset};
+        \node[box, fill=cyan!5] (g1_3) at (0, -3) {Wireless Tx \\ (ESP32)};
+        \draw[arrow] (g1_1) -- (g1_2);
+        \draw[arrow] (g1_2) -- (g1_3);
+
+        % Group 2: Preprocessing
+        \node[title] (g2) at (3.2, 0) {2. Preprocessing};
+        \node[box, fill=orange!5] (g2_1) at (3.2, -1) {Bandpass \& \\ Notch Filters};
+        \node[box, fill=orange!5] (g2_2) at (3.2, -2) {ICA Artifact \\ Removal};
+        \node[box, fill=orange!5] (g2_3) at (3.2, -3) {Data Epoching \\ \& Segmentation};
+        \draw[arrow] (g2_1) -- (g2_2);
+        \draw[arrow] (g2_2) -- (g2_3);
+
+        % Group 3: Features
+        \node[title] (g3) at (6.4, 0) {3. Extraction};
+        \node[box, fill=teal!5] (g3_1) at (6.4, -1.0) {Time / Freq \\ Metrics};
+        \node[box, fill=teal!5] (g3_2) at (6.4, -2.0) {Connectivity \\ Data};
+        \node[box, fill=teal!5] (g3_3) at (6.4, -3.0) {CWT Scalograms \\ Images};
+        
+        % Connections between columns 1 -> 2 -> 3
+        \draw[arrow] (g1_3.east) -- ++(0.15,0) |- (g2_1.west);
+        \draw[arrow] (g2_3.east) -- ++(0.15,0) |- (g3_1.west);
+        \draw[arrow] (g2_3.east) -- ++(0.15,0) |- (g3_2.west);
+        \draw[arrow] (g2_3.east) -- ++(0.15,0) |- (g3_3.west);
+
+        % Group 4: Machine Learning
+        \node[title] (g4) at (9.6, 0) {4. Classification};
+        \node[box, fill=purple!5] (g4_1) at (9.6, -1.0) {Traditional ML \\ (SVM / RF)};
+        \node[box, fill=purple!5] (g4_2) at (9.6, -2.0) {Deep Learning \\ (ViT / CNN)};
+        \node[box, fill=magenta!5] (g4_3) at (9.6, -3.0) {Fuzzy Learning \\ (ANFIS / FDT)};
+        \draw[arrow] (g3_1.east) -- ++(0.15,0) |- (g4_1.west);
+        \draw[arrow] (g3_2.east) -- ++(0.15,0) |- (g4_1.west);
+        \draw[arrow] (g3_3.east) -- (g4_2.west);
+        \draw[arrow] (g3_1.east) -- ++(0.15,0) |- (g4_3.west);
+
+        % Group 5: Decision Support
+        \node[title] (g5) at (13.0, 0) {5. Clinical UI};
+        \node[box, fill=teal!10] (g5_1) at (13.0, -2.0) {Hybrid Ensemble \\ Interpretation};
+        \node[box, fill=yellow!10] (g5_2) at (13.0, -3.2) {Assessment UI \\ Dashboard};
+        \draw[arrow] (g4_1.east) -- ++(0.15,0) |- (g5_1.west);
+        \draw[arrow] (g4_2.east) -- ++(0.15,0) |- (g5_1.west);
+        \draw[arrow] (g4_3.east) -- ++(0.15,0) |- (g5_1.west);
+        \draw[arrow] (g5_1) -- (g5_2);
+
+    \end{tikzpicture}
+    }
+    \caption{Comprehensive structural pipeline of the NeuroHTz methodology, detailing sub-processes across hardware, preprocessing, deep \& fuzzy classification, and hybrid clinical reporting.}
+    \label{fig:summary_pipeline}
+\end{figure}
+
+\section{Components and Implementation}
+\include{preprocessing_pipeline}
+\include{feature_extraction_pipeline}
+\include{feature_selection_pipeline}
+\include{classification_pipeline}
+
+
+\chapter*{Appendix A - Features and Dimensionality Reduction}
+\label{app:A}
+\addcontentsline{toc}{chapter}{Appendix A - Features and Dimensionality Reduction}
+\section{Feature Extraction and Selection}
+\label{sec:feat_extract}
+We extract a comprehensive set of features from the preprocessed EEG data, including time-domain features (e.g., mean, variance, skewness), frequency-domain features (e.g., power spectral density, band power in specific frequency bands), and time-frequency features (e.g., wavelet coefficients) \cite{cassani2020review}. We also focus on extracting features related to gamma oscillations, particularly around the 40Hz frequency, as disruptions in this band have been associated with Alzheimer's disease \cite{martorell2019gamma}. Additionally, we explore the use of connectivity measures (e.g., coherence, phase-locking value) to capture the interactions between different brain regions \cite{stam2007graph}, which may provide further insights into the neural changes associated with Alzheimer's disease. We also explore the use of fuzzy features such as the Katz Fractal Dimension among others, which can capture the complexity of EEG signals and may provide additional discriminatory power for classifying Alzheimer's. \\
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=blue!5},
+        ->, thick
+    ]
+        \node[box] (n1) at (0,0) {Raw EEG \\ Data};
+        \node[box] (n2) at (3.5,0) {Preprocessing \\ (Filter \& Artifacts)};
+        \node[box] (n3) at (7.5,0) {Feature \\ Extraction};
+        \node[box] (n4) at (11.5,0) {Dimensionality \\ Reduction};
+        \node[box] (n5) at (11.5,-2.5) {Machine Learning \\ Classification};
+        
+        \draw (n1) -- (n2);
+        \draw (n2) -- (n3);
+        \draw (n3) -- (n4);
+        \draw (n4) -- (n5);
+    \end{tikzpicture}
+    \caption{High-level architectural flowchart of the EEG data processing pipeline.}
+    \label{fig:eeg_pipeline}
+\end{figure}
+
+To understand this in more detail, we first define what features mean and why they are important. \\
+\definitionbox{\textbf{Feature:} A feature is a measurable property or characteristic of data that can be used for analysis and modeling. In the context of EEG data, features can be derived from raw signals and can capture aspects of brain activity such as amplitude, frequency content, and connectivity patterns. Features are important because they serve as input to machine learning models, and the choice of features can significantly affect model performance. By extracting relevant features from EEG data, we provide machine learning models with information that helps differentiate between Alzheimer's patients and healthy controls.}
+\definitionbox{\textbf{Feature Extraction:} Feature extraction is the process of transforming raw data into a set of features that can be used for analysis and modeling. In EEG analysis, feature extraction applies signal-processing techniques to derive information that is relevant to brain activity. For example, Fourier-based methods can be used for frequency-domain features such as power spectral density, and wavelet methods can be used for time-frequency features. The choice of technique depends on the characteristics of the EEG data and the goals of the analysis.}
+\definitionbox{\textbf{Feature Selection:} Feature selection is the process of choosing a subset of relevant extracted features for use in machine learning models. This is important because too many features can lead to overfitting, where a model learns noise instead of underlying patterns. Feature selection improves performance by reducing dimensionality and focusing on informative variables. Common approaches include filter, wrapper, and embedded methods, and fuzzy logic-based selection can further improve interpretability and robustness under uncertainty.}
+Let us denote the raw EEG data as a matrix organized by channels and time points. The feature extraction stage transforms this raw signal matrix into a sample-by-feature representation, and the feature selection stage keeps only the most informative subset for final classification. The resulting reduced feature set is then used as input to machine learning models. We discuss the specific extraction and selection techniques in the subsequent sections, along with their rationale and impact on early Alzheimer's detection using EEG data.
+\section{Features Used in Alzheimer's Disease Detection}
+\label{sec:feat_hz}
+We use a variety of features derived from the EEG data to capture different aspects of brain activity that may be relevant for Alzheimer's disease detection. The most standard features are - 
+\begin{itemize}
+    \item \textbf{Time-Domain Features:} These include statistical measures such as mean, variance, skewness, and kurtosis of the EEG signals. These features can capture the overall amplitude and variability of the brain activity.
+    \item \textbf{Frequency-Domain Features:} These include power spectral density and band power in specific frequency bands (e.g., delta, theta, alpha, beta, gamma). Disruptions in specific frequency bands, particularly gamma oscillations around 40Hz, have been associated with Alzheimer's disease.
+    \item \textbf{Time-Frequency Features:} These include wavelet coefficients that capture how the frequency content of the EEG signals changes over time. This can provide insights into the dynamic patterns of brain activity that may be relevant for Alzheimer's disease.
+      \item \textbf{Connectivity Measures:} These include coherence and phase-locking value, which capture the interactions between different brain regions. Changes in connectivity patterns have been observed in Alzheimer's disease and may provide additional discriminatory power for classification \cite{stam2007graph, engels2015gamma}.
+      \item \textbf{Fuzzy Features:} These include measures such as the Katz Fractal Dimension, which can capture the complexity of EEG signals. Fuzzy features can provide additional information about the underlying neural dynamics that may be relevant for Alzheimer's disease detection \cite{jang1993anfis}.
+\end{itemize}
+\subsection{Time Domain Feature Extraction}
+\label{subsec:time_domain}
+We extract time-domain features from the preprocessed EEG signals to capture the statistical properties of brain activity. These features include measures such as mean, variance, skewness, and kurtosis across channels and time segments. The mean reflects average signal amplitude, variance reflects variability, and skewness and kurtosis summarize distribution shape and tail behavior. The sample mean $\mu$, variance $\sigma^2$, skewness $\gamma_1$, and kurtosis $\beta_2$ for a discrete EEG segment $x$ of length $N$ are formally defined as:
+\begin{equation}
+    \mu = \frac{1}{N} \sum_{i=1}^{N} x_i, \quad 
+    \sigma^2 = \frac{1}{N-1} \sum_{i=1}^{N} (x_i - \mu)^2
+\end{equation}
+\begin{equation}
+    \gamma_1 = \frac{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^3}{\sigma^3}, \quad 
+    \beta_2 = \frac{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^4}{\sigma^4}
+\end{equation}
+These time-domain features help differentiate Alzheimer's patients from healthy controls by capturing differences in overall amplitude and variability patterns. We discuss the specific calculation methods and their relevance in the subsequent sections. The extraction process applies statistical operations to segmented EEG windows to produce a feature vector for each sample. We also explore fuzzy logic-based approaches for time-domain feature extraction to better handle uncertainty and variability while improving interpretability and robustness.
+\subsection{Frequency Domain Feature Extraction}
+\label{subsec:freq_domain}
+We extract frequency-domain features from the preprocessed EEG signals to capture spectral properties of brain activity. These features include power spectral density and band power in standard EEG bands such as delta, theta, alpha, beta, and gamma. Disruptions in specific bands, particularly around 40 Hz in the gamma range, are associated with Alzheimer's disease. Spectral estimates can be obtained using methods such as FFT-based analysis or Welch averaging, and band-specific power values are aggregated for model input. The Power Spectral Density (PSD) via the Fourier transform $X_T(f)$ of the signal $x(t)$ over a time interval $T$ is approximated as:
+\begin{equation}
+    \text{PSD}(f) = \lim_{T \to \infty} \frac{1}{T} \left| \int_{0}^{T} x(t) e^{-j 2\pi f t} dt \right|^2
+\end{equation}
+The absolute band power $P_{band}$ within a specific frequency range $[f_{low}, f_{high}]$ is then calculated by numerically integrating the PSD:
+\begin{equation}
+    P_{band} = \int_{f_{low}}^{f_{high}} \text{PSD}(f) df
+\end{equation}
+These features help differentiate Alzheimer's patients from healthy controls by capturing changes in spectral structure. We discuss the specific methods and their relevance in the subsequent sections. We also explore fuzzy logic-based approaches for frequency-domain feature extraction to improve robustness and interpretability under noisy and variable EEG conditions.
+\subsection{Time-Frequency Feature Extraction \& Scalogram Conversion}
+\label{subsec:time_freq}
+We extract time-frequency features from the preprocessed EEG signals to capture dynamic patterns of brain activity relevant to Alzheimer's disease detection. These features include wavelet coefficients obtained using Continuous Wavelet Transform (CWT) analysis. This approach reveals how frequency content changes over time and provides temporal context that pure frequency summaries may miss.
+
+The CWT of a signal $x(t)$ is defined by the convolution of the signal with a scaled and translated version of a "mother wavelet" $\psi(t)$:
+\begin{equation}
+    \text{CWT}(a, b) = \frac{1}{\sqrt{a}} \int_{-\infty}^{\infty} x(t) \psi^*\left(\frac{t-b}{a}\right) dt
+\end{equation}
+where $a$ is the scale parameter (inversely proportional to frequency), $b$ is the translation parameter (time), and $\psi^*$ is the complex conjugate of the mother wavelet. A commonly used wavelet for EEG signals is the complex Morlet wavelet, which provides a good balance between time and frequency localization:
+\begin{equation}
+    \psi(t) = \frac{1}{\pi^{1/4}} e^{j \omega_0 t} e^{-t^2 / 2}
+\end{equation}
+
+Further, we formally convert the raw signal data into a 2D visual representation known as a \textbf{scalogram}, which can be used as image input for convolutional neural networks (CNNs) and Vision Transformers (ViTs). The scalogram $S(a,b)$ maps the absolute square of the CWT coefficients, representing signal power at a given time and frequency:
+\begin{equation}
+    S(a,b) = |\text{CWT}(a,b)|^2
+\end{equation}
+To use this as an image input, we map the continuous parameters $a$ and $b$ to a discrete 2D grid where the x-axis is time, the y-axis is frequency, and the pixel color intensity corresponds to $S(a,b)$. This resulting matrix is then normalized to pixel values (e.g., $0-255$) and saved as a graphical representation. By treating the resulting scalogram as an image, deep learning models can learn complex graphical time-frequency signatures indicative of Alzheimer's disease without requiring manual feature-engineering.
+\subsection{Connectivity Feature Extraction}
+We extract connectivity features from the preprocessed EEG signals to capture interactions between brain regions that may reflect Alzheimer's-related neural changes. These features primarily include coherence and phase-locking value (PLV), which summarize synchronization between channel pairs in complementary ways. 
+
+The \textbf{Magnitude Squared Coherence} ($C_{xy}$) between two EEG signals $x(t)$ and $y(t)$ measures linear synchronization as a function of frequency $f$, normalizing their cross-spectral density ($P_{xy}$) by their individual power spectral densities ($P_{xx}, P_{yy}$):
+\begin{equation}
+    C_{xy}(f) = \frac{|P_{xy}(f)|^2}{P_{xx}(f)P_{yy}(f)}
+\end{equation}
+
+Alternatively, the \textbf{Phase-Locking Value (PLV)} isolates purely phase-based synchronization between two signals over $N$ time points, discarding amplitude variations. For instantaneous phases $\phi_x(t)$ and $\phi_y(t)$, the PLV is bounded between 0 (no phase sync) and 1 (perfect phase lock):
+\begin{equation}
+    \text{PLV} = \frac{1}{N} \left| \sum_{t=1}^{N} \exp(j(\phi_x(t) - \phi_y(t))) \right|
+\end{equation}
+Connectivity patterns are often altered in Alzheimer's disease and can therefore provide an additional discriminatory signal. The extraction process applies connectivity analysis to segmented EEG windows and compiles channel-pair summaries into sample-level feature vectors for model input.
+
+\section{Dimensionality Reduction}
+\label{sec:dim_red}
+Due to the numerous features extracted from the multi-channel EEG data across various domains (time, frequency, time-frequency, and connectivity), the resulting feature matrix is often high-dimensional. This high dimensionality can lead to the 'curse of dimensionality', where machine learning models become susceptible to overfitting, increased computational complexity, and decreased generalization capability. Dimensionality reduction techniques are employed to map the high-dimensional feature space into a lower-dimensional subspace while retaining as much of the relevant variance and discriminatory information as possible.
+
+\subsection{Principal Component Analysis (PCA)}
+Principal Component Analysis (PCA) is an unsupervised linear dimensionality reduction technique that transforms the original features into a new set of orthogonal variables called principal components. Given an $n \times m$ mean-centered feature matrix $X$ (where $n$ is samples and $m$ is features), the data's covariance matrix $C$ is defined as:
+\begin{equation}
+    C = \frac{1}{n-1} X^T X
+\end{equation}
+The principal components are identified by solving the eigenvalue problem:
+\begin{equation}
+    C \mathbf{v}_i = \lambda_i \mathbf{v}_i
+\end{equation}
+where $\mathbf{v}_i$ are the eigenvectors representing the principal components, and $\lambda_i$ are the eigenvalues indicating the corresponding variance explained. These components are ordered by the amount of variance they explain in the data. By selecting the top principal components that capture the majority of the data variance, we can significantly reduce the dimensionality of the EEG feature set while preserving the essential underlying structure.
+
+\subsection{t-Distributed Stochastic Neighbor Embedding (t-SNE)}
+t-SNE is a non-linear dimensionality reduction technique particularly well-suited for the visualization of high-dimensional datasets. It models the similarities between data points to define probabilities that points are neighbors, then maps these points to a lower-dimensional space (typically 2D or 3D) while preserving the local structure. This allows for visual inspection of the separability between healthy controls and Alzheimer's disease subjects based on the extracted EEG features.
+
+\subsection{Feature Selection vs. Dimensionality Reduction}
+While feature selection chooses a subset of the original features, dimensionality reduction creates entirely new representations that summarize the original ones. These two approaches will be used complementarily in our data pipeline. We first employ feature selection to remove redundant or irrelevant features, followed by dimensionality reduction via techniques like PCA to generate a compact, robust feature vector for downstream machine learning classifiers.
+
+
+\chapter*{Appendix B - Fuzzy Logic}
+\label{app:B}
+\addcontentsline{toc}{chapter}{Appendix B - Fuzzy Logic}
+\section{Basic Overview of Fuzzy Logic}
+\label{sec:overview_fuzzy}
+Fuzzy logic is a mathematical framework for dealing with uncertainty and imprecision in data. Unlike traditional binary logic, which classifies statements as either true or false, fuzzy logic allows for degrees of truth \cite{zadeh1965fuzzy}, where a statement can be partially true and partially false at the same time. This is particularly useful in real-world applications where data may be noisy, incomplete, or ambiguous. In fuzzy logic, variables can take on a range of values between 0 and 1, representing the degree of membership in a particular set. For example, in the context of Alzheimer's disease detection, we might have a variable representing the likelihood of Alzheimer's disease, which can take on values such as "low," "medium," and "high" with corresponding membership functions that define how these linguistic terms relate to the underlying numerical values. Fuzzy logic systems typically consist of three main components: fuzzification, inference engine, and defuzzification. 
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=green!5},
+        ->, thick
+    ]
+        \node[box] (n1) at (0,0) {Crisp Inputs \\ (EEG Features)};
+        \node[box] (n2) at (4,0) {Fuzzification};
+        \node[box] (n3) at (8,0) {Inference Engine \\ \& Rule Base};
+        \node[box] (n4) at (12,0) {Defuzzification};
+        \node[box] (n5) at (12,-2.5) {Crisp Output \\ (Risk Score)};
+        
+        \draw (n1) -- (n2);
+        \draw (n2) -- (n3);
+        \draw (n3) -- (n4);
+        \draw (n4) -- (n5);
+    \end{tikzpicture}
+    \caption{Architecture of a standard Fuzzy Inference System (FIS).}
+    \label{fig:fis_architecture}
+\end{figure}
+
+Fuzzification is the process of converting crisp input values into fuzzy values based on predefined membership functions. The inference engine applies a set of fuzzy rules to the fuzzified inputs to derive fuzzy outputs. Finally, defuzzification converts the fuzzy outputs back into crisp values that can be used for decision-making or further analysis. By using fuzzy logic in our machine learning models for Alzheimer's disease detection, we can enhance the interpretability and robustness of our models by allowing them to handle uncertainty and variability in EEG data more effectively. In this appendix, we provide a basic overview of fuzzy logic, including its principles, components, and applications in the context of our project for early detection of Alzheimer's disease using EEG data and machine learning algorithms. We also discuss how fuzzy logic can be integrated into our machine learning models to improve their performance and interpretability in the context of Alzheimer's disease detection.
+
+\subsection{Basic priniciples and definitions}
+In classical set theory, an element either belongs to a set or it does not. For example, in the case of a set of "Alzheimer's patients," an individual either belongs to the set (is diagnosed with Alzheimer's) or does not belong to the set (is not diagnosed with Alzheimer's). However, in many real-world scenarios, such binary classifications may not capture the complexity and uncertainty of the data. Fuzzy logic allows for a more nuanced representation of membership in a set by introducing the concept of fuzzy sets. In a fuzzy set, an element can have a degree of membership that ranges between 0 and 1. For example, an individual might have a membership value of 0.7 in the "Alzheimer's patients" set, indicating that they are likely to have Alzheimer's but there is some uncertainty. This allows us to capture the inherent variability and uncertainty in medical diagnoses and other real-world applications. Fuzzy logic also introduces the concept of linguistic variables, which are variables that can take on linguistic values such as "low," "medium," and "high." These linguistic values are associated with membership functions that define how they relate to the underlying numerical values. For example, we might have a linguistic variable for "risk of Alzheimer's disease" with membership functions that define what constitutes "low risk," "medium risk," and "high risk" based on the output of our machine learning models. By using fuzzy logic in our machine learning models for Alzheimer's disease detection, we can enhance their ability to handle uncertainty and variability in EEG data, which can improve their performance and interpretability in clinical settings. The formal definitions are as follows - \\
+\definitionbox{\textbf{Fuzzy Set:} A fuzzy set in a universe of discourse is described by a membership function that assigns each element a degree of membership between zero and one. Unlike classical sets, where membership is strictly yes or no, fuzzy sets allow partial membership and therefore capture uncertainty more naturally.}
+\definitionbox{\textbf{Linguistic Variable:} A linguistic variable is a variable whose values are words or labels such as low risk, medium risk, and high risk. Each label is represented by a fuzzy set and corresponding membership function that links language-based descriptions to numerical values.}
+\subsection{Construction of Fuzzy Membership Functions}
+\label{subsec:fuzzy_membership}
+The construction of fuzzy membership functions is a crucial step in the design of a fuzzy logic system. Membership functions define how the linguistic values of a variable relate to the underlying numerical values. There are various shapes of membership functions, including triangular, trapezoidal, Gaussian, and sigmoid functions. 
+
+The \textbf{Triangular membership function} is parameterized by three scalars $(a, b, c)$ where $a \le b \le c$:
+\begin{equation}
+    \mu_{tri}(x) = \max\left( \min\left( \frac{x-a}{b-a}, \frac{c-x}{c-b} \right), 0 \right)
+\end{equation}
+
+The \textbf{Trapezoidal membership function} is defined by four scalars $(a, b, c, d)$:
+\begin{equation}
+    \mu_{trap}(x) = \max\left( \min\left( \frac{x-a}{b-a}, 1, \frac{d-x}{d-c} \right), 0 \right)
+\end{equation}
+
+For instance, a \textbf{Gaussian membership function} $\mu_G(x)$ for a fuzzy set is mathematically defined by its center $c$ and width $\sigma$:
+\begin{equation}
+    \mu_G(x) = \exp\left( -\frac{(x - c)^2}{2\sigma^2} \right)
+\end{equation}
+
+The choice of membership function depends on the specific application and the nature of the data. We can construct membership functions based purely on data-driven approaches using clustering algorithms like \textbf{Fuzzy C-Means (FCM)}. By doing so, we analyze the distribution of the data to automatically calculate parameters (like $c$ and $\sigma$ for Gaussian functions) that capture the relevant patterns in the data. We can do this as follows - \\
+\begin{enumerate}
+    \item Collect a dataset of EEG recordings from patients with Alzheimer's disease and healthy controls, along with relevant clinical information such as age, gender, and cognitive test scores.
+    \item Identify relevant features in the EEG data that are associated with Alzheimer's disease, such as power in specific frequency bands, connectivity measures, or complexity measures. 
+    \item Use the identified features to define linguistic variables for the risk of Alzheimer's disease, such as "low risk," "medium risk," and "high risk."
+    \item Use the minimize entropy priniciple approach to construct membership functions for the linguistic variables based on the distribution of the identified features in the dataset. This involves analyzing the distribution of the features and defining membership functions that capture the relevant patterns in the data while minimizing uncertainty and maximizing interpretability.
+\end{enumerate}
+
+\subsection{Fuzzy C-Means (FCM) Clustering}
+\label{subsec:fcm}
+Fuzzy C-Means (FCM) is an unsupervised data-clustering technique that inherently supports fuzzy logic. Unlike hard clustering methods (such as K-Means) where every data point belongs exclusively to one cluster, FCM allows each data point to belong to multiple clusters with varying degrees of membership. This makes it highly advantageous for analyzing highly variable, ambiguous biomedical data like multi-channel EEG signals where category boundaries between 'healthy' and 'pathological' brain states are rarely crisp.
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}
+        % Draw fuzzy clusters with dashed borders for clarity
+        \filldraw[fill=red!10, draw=red!40, dashed, thick] (-2,0) ellipse (2.2cm and 1.5cm);
+        \filldraw[fill=blue!10, draw=blue!40, dashed, thick] (2,0) ellipse (2.2cm and 1.5cm);
+        
+        % Data points
+        \node[circle, fill=red!80, inner sep=1.5pt] (p1) at (-2.8, 0.4) {};
+        \node[circle, fill=red!80, inner sep=1.5pt] (p2) at (-1.6, -0.6) {};
+        \node[circle, fill=red!80, inner sep=1.5pt] (p3) at (-2.2, 0.8) {};
+        
+        \node[circle, fill=blue!80, inner sep=1.5pt] (p4) at (2.6, 0.5) {};
+        \node[circle, fill=blue!80, inner sep=1.5pt] (p5) at (1.8, -0.7) {};
+        \node[circle, fill=blue!80, inner sep=1.5pt] (p6) at (2.4, -0.2) {};
+        
+        % Fuzzy point in the shared middle
+        \node[circle, fill=purple, inner sep=2pt, label={[align=center]above:{$p_{\text{fuzzy}}$\\ \scriptsize $\mu_1=0.6, \mu_2=0.4$}}] (p_mid) at (0, 0.2) {};
+        
+        % Cluster centers mapped simply to reduce clutter
+        \node[label=below:{\small $C_1$ (Healthy)}] at (-2,0) {\Large $\times$};
+        \node[label=below:{\small $C_2$ (Alzheimer's)}] at (2,0) {\Large $\times$};
+        
+    \end{tikzpicture}
+    \caption{Visual representation of Fuzzy C-Means (FCM). Instead of hard boundaries, the overlapping region permits points (like $p_{\text{fuzzy}}$) to share membership across multiple clusters.}
+\end{figure}
+
+The FCM algorithm aims to minimize an objective function $J_m$ representing the weighted sum of squared errors between the data points $x_i$ and the cluster centers $c_j$:
+\begin{equation}
+    J_m = \sum_{i=1}^{N} \sum_{j=1}^{C} u_{ij}^m \| x_i - c_j \|^2
+\end{equation}
+where:
+\begin{itemize}
+    \item $N$ is the number of data points.
+    \item $C$ is the number of clusters.
+    \item $x_i$ is the $i$-th feature vector (data point).
+    \item $c_j$ is the center vector of the $j$-th cluster.
+    \item $u_{ij}$ is the degree of membership of $x_i$ in the cluster $j$, such that $\sum_{j=1}^C u_{ij} = 1$.
+    \item $m \ge 1$ is the \textit{fuzzifier} parameter (commonly set to $m=2$), which determines the level of cluster fuzziness.
+    \item $\| x_i - c_j \|$ is the Euclidean distance between a data point and the cluster center.
+\end{itemize}
+
+The algorithm iteravely updates the cluster centers $c_j$ and the membership matrix $U = [u_{ij}]$ according to the following analytical solutions:
+\begin{equation}
+    c_j = \frac{\sum_{i=1}^N u_{ij}^m x_i}{\sum_{i=1}^N u_{ij}^m}
+\end{equation}
+\begin{equation}
+    u_{ij} = \frac{1}{\sum_{k=1}^C \left( \frac{\| x_i - c_j \|}{\| x_i - c_k \|} \right)^{\frac{2}{m-1}}}
+\end{equation}
+
+This iteration continues until the change in the membership matrix $\max_{ij} {|u_{ij}^{(k+1)} - u_{ij}^{(k)}|}$ falls below a predetermined termination threshold $\epsilon$.
+
+In our proposed pipeline, running FCM over the aggregated multi-channel feature matrix allows the automated and purely data-driven generation of overlapping linguistic labels (e.g., finding the optimal parameters $c_j$ and Gaussian spread $\sigma$ for sets 'High Alpha', 'Medium Alpha', 'Low Alpha'). Doing so bypasses subjective human thresholding and preserves the uncertainty inherent to early onset Alzheimer's.
+
+\section{Fuzzy Features and Fuzzy Logic-Based Machine Learning Models}
+\label{sec:fuzzy_ml}
+Let us now discuss some fuzzy features that can be derived from EEG data and how they can be used in fuzzy logic-based machine learning models for Alzheimer's disease detection. A few examples of fuzzy features include -
+\begin{itemize}
+    \item \textbf{Katz Fractal Dimension:} This is a measure of the complexity of a signal, which can capture the irregularity and self-similarity of EEG signals. It can provide insights into the underlying neural dynamics and may be relevant for Alzheimer's disease detection.
+    \item \textbf{Fuzzy Entropy:} This is a measure of the uncertainty or randomness in a signal, which can capture the variability and unpredictability of EEG signals. It can provide information about the complexity and irregularity of brain activity, which may be relevant for Alzheimer's disease detection.
+    \item \textbf{Fuzzy Connectivity Measures:} These measures capture the interactions between different brain regions in a fuzzy manner, allowing for partial membership in connectivity patterns. This can provide insights into the changes in brain connectivity associated with Alzheimer's disease.
+\end{itemize}
+
+Beyond simple feature extraction, fuzzy logic can be integrated directly into the machine learning classification process to form Fuzzy Inference Systems (FIS) or Fuzzy Neural Networks (FNNs). In a fuzzy logic-based machine learning model:
+\begin{enumerate}
+    \item \textbf{Fuzzy Rule Base:} We derive a set of IF-THEN rules from the training data mapping fuzzy feature values to diagnostic outcomes (e.g., IF Katz Fractal Dimension is 'low' AND Fuzzy Entropy is 'low', THEN likelihood of Alzheimer's is 'high').
+    \item \textbf{Hybrid Learning:} Neural networks can be trained to optimize the parameters of the fuzzy membership functions and the rule weights automatically. This approach, known as the Adaptive Neuro-Fuzzy Inference System (ANFIS) \cite{jang1993anfis}, combines the learning capability of neural networks with the interpretability of fuzzy logic.
+\end{enumerate}
+By integrating fuzzy logic into the classification pipeline, we produce a system that gives a continuous, probabilistic risk assessment rather than a rigid binary classification. This accounts for the natural disease progression and the inherent noise in non-invasive EEG measurements, rendering the final clinical tool far more robust, interpretable, and suited for real-world diagnostic support.
+
+\chapter*{Appendix C - Hybrid Model Interpretation and Explainability}
+\label{app:C}
+\addcontentsline{toc}{chapter}{Appendix C - Hybrid Model Interpretation and Explainability}
+
+\section{Ensemble Aggregation Formulation}
+\label{sec:ensemble}
+The Hybrid Model Interpretation layer mathematically synthesizes the categorical probabilities derived from traditional machine learning models ($P_{ML}$), deep learning models ($P_{DL}$), and the continuous risk weightings computed by the Adaptive Neuro-Fuzzy Inference System ($W_F$). To generate a unified clinical risk score $R_{final} \in [0,1]$, we utilize a dynamic weighted rank-aggregation formulation:
+
+\begin{equation}
+    R_{final} = \alpha(x) P_{ML} + \beta(x) P_{DL} + \gamma(x) W_F
+\end{equation}
+
+where the coefficients satisfy the constraint $\alpha(x) + \beta(x) + \gamma(x) = 1$ for any given patient data input $x$. Unlike static ensemble models, these coefficients are optimized dynamically instance-by-instance using a logistic regression meta-learner trained on longitudinal clinical ground truth. This dynamically assigns higher confidence to whichever model stream (visual scalograms vs. numeric fuzzy metrics) demonstrates superior certainty for a given patient. 
+
+To quantify the internal certainty (or entropy) of the base categorical models, information entropy $H(P)$ for a normalized probability distribution across $C$ disease classes (Healthy, Mild Cognitive Impairment, Alzheimer's) is computed:
+
+\begin{equation}
+    H(P) = -\sum_{i=1}^{C} P_i \log_2(P_i)
+\end{equation}
+
+If $H(P_{DL})$ is critically high (indicating the deep learning ViT model is unsure due to ambiguous scalogram spatial patterns), the meta-learner intuitively shifts the weight parameter $\beta(x)$ down via a softmax temperature gating function:
+
+\begin{equation}
+    w_k(x) = \frac{\exp(-H_k(x) / \tau)}{\sum_{j \in \{ML, DL, F\}} \exp(-H_j(x) / \tau)}
+\end{equation}
+
+where $\tau$ is the temperature scaling factor controlling how aggressively the ensemble penalizes uncertainty. This ensures that the system relies more heavily on the deterministic ML and Fuzzy base models to calculate the final risk output when deep visual features are inconclusive.
+
+\section{State-of-the-Art Explainability Approaches (XAI)}
+\label{sec:xai}
+Providing a raw probability vector to clinicians is insufficient; modern clinical decision support systems require Explainable AI (XAI) mapping to foster trust. To demystify the "black box" deep learning and deterministic models, our interpretation layer employs state-of-the-art techniques natively, primarily relying on Local Interpretable Model-agnostic Explanations (LIME) \cite{ribeiro2016lime} and SHapley Additive exPlanations (SHAP) \cite{lundberg2017shap}.
+
+\subsection{Local Interpretable Model-agnostic Explanations (LIME)}
+\label{subsec:lime}
+LIME operates on the principle that while an entire deep learning model $f(x)$ may be highly non-linear and mathematically complex globally, it can be approximated locally for an individual patient's data point $x$ by a simpler, interpretable model $g(x)$ (such as a sparse linear regression or a shallow decision tree).
+
+The LIME objective function seeks to minimize the local fidelity loss $L$ while heavily penalizing the complexity $\Omega(g)$ of the explanation model:
+
+\begin{equation}
+    \xi(x) = \underset{g \in G}{\operatorname{argmin}} \ \mathcal{L}(f, g, \pi_x) + \Omega(g)
+\end{equation}
+
+where $G$ is a class of interpretable models, $\pi_x(z)$ is a proximity measure weighting simulated neighborhood samples $z$ dynamically around the original patient's data $x$, and $\mathcal{L}(f, g, \pi_x)$ is the fidelity loss measuring how unfaithfully $g$ approximates $f$ in the localized region defined by $\pi_x$. This outputs a direct, linearly readable map of which active EEG channels caused a spike in Alzheimer's probability.
+
+\subsection{SHapley Additive exPlanations (SHAP)}
+\label{subsec:shap}
+While LIME provides localized additive explanations, SHAP provides a unified measure of global and local feature importance that guarantees theoretical consistency. SHAP values allocate the exact marginal contribution of each input feature toward the final prediction. Mathematically, the SHAP value $\phi_i$ for a specific feature $i$ is calculated using cooperative game theory:
+
+\begin{equation}
+    \phi_i(f, x) = \sum_{S \subseteq F \setminus \{i\}} \frac{|S|! (|F| - |S| - 1)!}{|F|!} \left[ f_x(S \cup \{i\}) - f_x(S) \right]
+\end{equation}
+
+where $F$ is the set of all EEG features, $S$ is a subset coalition of features, and $f_x(S)$ is the model's expected prediction using only the features in $S$. 
+
+For the deep learning pathway handling CWT Scalograms, we deploy \textbf{DeepSHAP}, an enhanced algorithm combining SHAP with DeepLIFT. DeepSHAP propagates activation multipliers backward through the Vision Transformer layers to produce spatial heatmaps on the original 40Hz scalogram. This allows clinicians to see exactly which time-frequency coordinate triggered an abnormal response.
+
+\section{Clinical Dashboard Integration Workflow}
+\label{sec:dashboard_integration}
+The integration of these discrete mathematical layers is formatted directly for clinical utility. The outputs generated above are translated into semantic visual structures for the end-user.
+
+\begin{figure}[htpb]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners, align=center, minimum height=1cm, fill=violet!5},
+        arrow/.style={->, thick}
+    ]
+        \node[box, fill=purple!5] (models) at (0, 0) {Base Models \\ ($P_{DL}, P_{ML}, W_F$)};
+        \node[box] (entropy) at (4, 1.5) {Entropy Gating \\ $w_k(x)$ Softmax};
+        \node[box] (shap) at (4, -1.5) {SHAP / LIME \\ Local Extractors};
+        
+        \node[box, fill=teal!10] (aggregator) at (8, 1.5) {Unified Risk Score \\ $R_{final}$};
+        \node[box, fill=magenta!10] (visuals) at (8, -1.5) {SHAP Force Plots \\ \& Spatial Heatmaps};
+        
+        \node[box, fill=yellow!10] (ui) at (12, 0) {Interactive \\ Clinical UI};
+
+        \draw[arrow] (models) -- (entropy);
+        \draw[arrow] (models) -- (shap);
+        \draw[arrow] (entropy) -- (aggregator);
+        \draw[arrow] (shap) -- (visuals);
+        \draw[arrow] (aggregator.east) -- ++(0.3,0) |- (ui.west);
+        \draw[arrow] (visuals.east) -- ++(0.3,0) |- (ui.west);
+    \end{tikzpicture}
+    \caption{Detailed flowchart of the advanced Explainable AI (XAI) and dynamic Entropy-Gating pipeline feeding directly into the visual UI.}
+    \label{fig:xai_flowchart_detailed}
+\end{figure}
+
+The \textit{Interactive Clinical UI} plots the $R_{final}$ score onto a unified risk gauge. Accompanying the gauge, the dashboard embeds SHAP "Force Plots" for the numeric ML features (showing red arrows for metrics pushing risk higher, like reduced coherence, and blue arrows for those stabilizing it). Simultaneously, it overlays the DeepSHAP localized spatial heatmaps directly onto the patient's scalp topographical plots or CWT scalograms, ensuring that the fuzzy linguistic rules and the dense neural network weights are entirely mapped back to physical neurobiology.
+
+\addcontentsline{toc}{chapter}{References}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

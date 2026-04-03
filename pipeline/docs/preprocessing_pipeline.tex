@@ -1,0 +1,68 @@
+\subsection{Signal Normalization and Neuro-Artifact Suppression Pipeline}
+\label{subsec:preprocessing_pipeline}
+
+The integrity of high-dimensional feature extraction and complex machine-learning mapping fundamentally relies upon the structural stability of the underlying neuro-electrical recordings. Specifically, acquiring electroencephalographic (EEG) data via dry-electrode arrays inherently captures a confluence of heterogeneous physiological variables—ranging from sub-hertz cortical drift and high-amplitude ocular bursts to electromyographic (EMG) clipping \cite{jeong2004eeg}. 
+
+Consequently, the implemented computational pipeline executes a highly deterministic, multi-tiered suppression schema designed not merely to filter noise, but to actively separate pathological, long-range Alzheimer's patterns from transient biological artifacts \cite{cassani2020review}. This execution path is segmented into four primary stages: raw signal normalization, adaptive topological filtering, epoch matrix construction, and final time-frequency transformation.
+
+\subsubsection{Dataset Normalization and Matrix Initialization}
+To computationally digest unstructured and varied clinical archives, the pipeline first forces raw geometric mapping. Utilizing custom MNE-Python based converters (\texttt{signal\_reader.py} and \texttt{file\_convert.py}), native architectures such as EEGLAB \texttt{.set} trees and unformatted \texttt{.tsv} matrices are transformed natively to MNE \texttt{.fif} standards. Crucially, BIDS-compliant metadata—including rigid channel classifications, 50/60 Hz power-line interference bounds, and reference topology mapping—is recursively mapped into the \texttt{raw.info} tensor. This unified base guarantees downstream matrix stability.
+
+\subsubsection{Cascaded Adaptive Signal Cleaning}
+The core signal cleaning sub-module abandons traditional rigid-bandpass topologies in favor of a dynamic, three-phase attenuator stack: Spectral Adpative Filtering, ASR-Style Eigensystem Whitening, and Fuzzy-Guided Phase Denoising via the Stationary Wavelet Transform (SWT).
+
+\paragraph{1. Context-Aware Spectral Filtering (\texttt{filtering.py})}
+The first layer executes 4th-order forward-backward infinite impulse response (IIR) Butterworth filtering governed by continuous spectral quality assessments. Instead of utilizing hard bounds, the system actively computes continuous power ratios across arbitrary signal windows. Specifically, pathological drift {\text{drift}}$ and myogenic interference {\text{emg}}$ ratios are defined:
+\begin{equation}
+R_{\text{drift}} = \frac{\overline{P_{0.1\text{--}1\,\mathrm{Hz}}}}{\overline{P_{1\text{--}30\,\mathrm{Hz}}}+\epsilon}, \qquad R_{\text{emg}} = \frac{\overline{P_{30\text{--}90\,\mathrm{Hz}}}}{\overline{P_{1\text{--}30\,\mathrm{Hz}}}+\epsilon}
+\end{equation}
+When low-frequency environmental artifact saturation escalates ({\text{drift}}$ spikes), the high-pass gate is dynamically pulled upward. Simultaneously, specialized recursive notch logic targets grid-mains interference—acting strictly when local dominant harmonics are probabilistically detected against baseline noise margins, securing uncorrupted higher-frequency cognitive gamma bands.
+
+\begin{figure}[htpb]
+\centering
+\resizebox{0.96\textwidth}{!}{
+\begin{tikzpicture}[
+    node distance=8mm and 10mm,
+    block/.style={rectangle, rounded corners, draw=black, line width=0.85pt, align=center, minimum width=3.4cm, minimum height=8mm, fill=orange!10},
+    decision/.style={diamond, draw=black, line width=0.85pt, aspect=1.8, align=center, fill=teal!10},
+    line/.style={-Latex, line width=0.75pt, draw=black}
+]
+\node[block] (raw) {MNE Raw Tensor};
+\node[block, below=of raw] (filter) {Adaptive Ratio IIR \\ {\text{drift}}$ \& {\text{emg}}$};
+\node[block, below=of filter] (asr) {Eigenspace Subspace \\ Attenuation (ASR)};
+\node[block, below=of asr] (fuzzy) {CMSE Feature Vector \\ + Fuzzy Evaluation};
+\node[decision, below=of fuzzy] (eval) {Artifact Active?};
+\node[block, left=of eval, fill=purple!10] (swt) {SWT Denoising};
+\node[block, below=of eval] (out) {Fully Validated Epoch};
+
+\draw[line] (raw) -- (filter);
+\draw[line] (filter) -- (asr);
+\draw[line] (asr) -- (fuzzy);
+\draw[line] (fuzzy) -- (eval);
+\draw[line] (eval) -- node[above] {Yes} (swt);
+\draw[line] (eval) -- node[right] {No} (out);
+\draw[line] (swt) |- (out.west);
+\end{tikzpicture}
+}
+\caption{Continuous execution map transitioning from linear topological filters through non-linear eigen-space attenuation and terminating in logical artifact fuzzy extraction.}
+\label{fig:preprocessing-flow}
+\end{figure}
+
+\paragraph{2. Subspace Artifact Attenuation (\texttt{asr\_subspace.py})}
+Proceeding beyond standard linear spectrums, the neuro-matrices undergo Artifact Subspace Reconstruction (ASR) via windowed 1.0-second covariance matrices. By identifying a low-variance calibration subspace (structurally the 35th percentile of the stream) it evaluates active eigenvalues $\lambda$ in orthogonal dimensions. A non-linear continuous gain limit explicitly isolates physiological bursts (e.g. eye blinks) independent of the underlying network oscillations:
+\begin{equation}
+g(\lambda) = \sqrt{\frac{\min(\lambda,\tau^2)}{\lambda}}
+\end{equation}
+Variables overriding variance limits $\tau^2$ mapped directly onto eigenvectors are consequently attenuated. Signals are perfectly restitched executing an overlapped Hann window addition matrix, preserving continuous signal gradients.
+
+\paragraph{3. Fuzzy-Guided SWT Denoising (\texttt{fuzzy\_artifact.py})}
+Traditional wavelet thresholds invariably induce hard-threshold geometric artifacts. To offset this, advanced fuzzy structural membership modeling acts as a gatekeeper. By analyzing signal components through structural chaos measures (Composite Multiscale Entropy, CMSE) and probability tails (skewness mapping), discrete epochs are mapped to trapezoidal fuzzy membership rules ($[0,1]$ contamination scale) \cite{zadeh1965fuzzy}. 
+Only components crossing confidence constraints trigger the deeper decomposition of the signal via a Stationary Wavelet Transform (SWT). Based upon the severity dictated directly via fuzzy mappings, discrete high-energy pathological wavelet coefficients are recursively scrubbed \cite{subasi2007wavelet}.
+
+\subsubsection{Dynamic Matrix Epoching}
+Once clean matrices are produced, topological data requires alignment for deep learning. Executed by \texttt{epoching.py}, signals track deterministic neuro-event markers isolated across generic \texttt{STI 014} channels. In pathological absence of fixed channel states, synthetic structural constraints fall back to pseudo-events ensuring geometric tensor dimensions of arbitrary interval states ({\min}=-0.2\,\text{s}, t_{\max}=0.8\,\text{s}$). Consistent geometric time constraints permit direct temporal comparisons and tensor shaping requisite across all 320 topological states.
+
+\subsubsection{Mathematical Visual Synthesis: Batched Continuous Wavelets}
+To natively accommodate visual deep learning (e.g. state-of-the-art vision transformers \cite{dosovitskiy2021vit}), spatial temporal sequences undergo a translation into Continuous Wavelet Transform (CWT) dense maps computed synchronously on 24-epoch GPU batches utilizing \texttt{ptwt}. 
+Mapping strictly out across 320 discrete scale arrays mapped back over frequencies between 1--45 Hz, coefficients are resolved directly against structural power maps. 
+These resulting geometric spatial transformations are processed computationally into multi-channel absolute RGB perceptually mapped PNG image matrices (\texttt{scalogram.py}). To limit visual dimensionality overhead, high contrast percentile clippings filter upper 98th-bound artifacts, projecting pristine geometric scalograms defining explicit high-frequency  cognitive biomarker representations necessary to intercept early structural MCI and Alzheimer's disease states.

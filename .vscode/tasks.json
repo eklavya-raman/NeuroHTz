@@ -1,0 +1,44 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Convert ds004504 to FIF",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"pipeline/src/file_support/file_convert.py"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Run recursive preprocess",
+			"type": "shell",
+			"command": "C:/Users/Admin/AppData/Local/Python/pythoncore-3.14-64/python.exe",
+			"args": [
+				"-m",
+				"signal_preprocessing.preprocess"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Run recursive preprocess from src",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"Set-Location \"pipeline/src\"; C:/Users/Admin/AppData/Local/Python/pythoncore-3.14-64/python.exe -m signal_preprocessing.preprocess"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Count scalogram images",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"(Get-ChildItem \"pipeline/scalograms\" -File -Filter *.png | Measure-Object).Count"
+			],
+			"isBackground": false
+		}
+	]
+}

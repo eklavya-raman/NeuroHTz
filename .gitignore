@@ -1,0 +1,51 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Editor and OS files
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+pipeline/*.log
+pipeline/comparisons/*.log
+pipeline/poc_outputs/**/*.log
+
+# Generated EEG artifacts and reports
+pipeline/data/
+pipeline/comparisons/
+pipeline/poc_outputs/
+pipeline/scalograms/
+pipeline/models/
+
+# Generated caches inside source trees
+pipeline/__pycache__/
+pipeline/src/**/__pycache__/
+
+# LaTeX build outputs
+pipeline/docs/*.aux
+pipeline/docs/*.bbl
+pipeline/docs/*.blg
+pipeline/docs/*.fdb_latexmk
+pipeline/docs/*.fls
+pipeline/docs/*.log
+pipeline/docs/*.out
+pipeline/docs/*.toc
+
+# Misc project outputs
