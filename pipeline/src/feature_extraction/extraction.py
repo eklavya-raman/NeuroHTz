@@ -18,7 +18,10 @@ if __package__ is None or __package__ == "":
 		compute_bandwise_connectivity_features,
 	)
 	from feature_extraction.frequency_domain import compute_frequency_domain_features  # type: ignore
+<<<<<<< HEAD
 	from feature_extraction.fuzzy_features import extract_fuzzy_features  # type: ignore
+=======
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 	from feature_extraction.time_domain import compute_time_domain_features  # type: ignore
 	from signal_preprocessing.preprocess import clean_raw_signal  # type: ignore
 	from signal_preprocessing.signal_reader import read_signal  # type: ignore
@@ -28,7 +31,10 @@ else:
 		compute_bandwise_connectivity_features,
 	)
 	from feature_extraction.frequency_domain import compute_frequency_domain_features
+<<<<<<< HEAD
 	from feature_extraction.fuzzy_features import extract_fuzzy_features
+=======
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 	from feature_extraction.time_domain import compute_time_domain_features
 	from signal_preprocessing.preprocess import clean_raw_signal
 	from signal_preprocessing.signal_reader import read_signal
@@ -43,10 +49,13 @@ class ExtractionConfig:
 	welch_nperseg: int = 256
 	connectivity_nperseg: int = 256
 	connectivity_filter_order: int = 4
+<<<<<<< HEAD
 	fuzzy_entropy_m: int = 2
 	fuzzy_entropy_r: float = 0.2
 	fuzzy_entropy_n: int = 2
 	fuzzy_connectivity_sigma: float = 0.5
+=======
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 
 
 def _safe_float(x: np.ndarray | float) -> float:
@@ -101,6 +110,7 @@ def extract_features_from_raw(
 		nperseg=cfg.connectivity_nperseg,
 		filter_order=cfg.connectivity_filter_order,
 	)
+<<<<<<< HEAD
 	fuzzy_features = extract_fuzzy_features(
 		data=raw_used,
 		sfreq=float(raw_used.info["sfreq"]),
@@ -109,6 +119,8 @@ def extract_features_from_raw(
 		entropy_n=cfg.fuzzy_entropy_n,
 		connectivity_sigma=cfg.fuzzy_connectivity_sigma,
 	)
+=======
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 
 	structured: dict[str, object] = {
 		"meta": {
@@ -120,7 +132,10 @@ def extract_features_from_raw(
 		"time": time_features,
 		"frequency": frequency_features,
 		"connectivity": connectivity_features,
+<<<<<<< HEAD
 		"fuzzy": fuzzy_features,
+=======
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 	}
 
 	structured["flat"] = _flatten_feature_dict(
@@ -128,7 +143,10 @@ def extract_features_from_raw(
 			"time": time_features,
 			"frequency": frequency_features,
 			"connectivity": connectivity_features,
+<<<<<<< HEAD
 			"fuzzy": fuzzy_features,
+=======
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 		}
 	)
 	return structured

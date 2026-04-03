@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import numpy as np
 import torch
 import os
@@ -105,6 +106,13 @@ def perform_cwt(
     sampling_period: float = 1.0,
     device: str | None = None,
 ):
+=======
+import pywt
+import numpy as np
+
+# Function to perform Continuous Wavelet Transform (CWT) on a signal
+def perform_cwt(signal: np.ndarray, scales: np.ndarray, wavelet: str = 'morl'):
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
     """
     Perform Continuous Wavelet Transform (CWT) on a signal.
 
@@ -117,6 +125,7 @@ def perform_cwt(
     cwt_matrix (ndarray): CWT coefficients matrix.
     frequencies (ndarray): Corresponding frequencies for the scales.
     """
+<<<<<<< HEAD
     scales_np = np.asarray(scales, dtype=np.float32)
     batch_coeffs, frequencies = perform_cwt_batch(
         np.asarray(signal, dtype=np.float32),
@@ -127,4 +136,10 @@ def perform_cwt(
     )
     cwt_matrix = batch_coeffs[0]
     return cwt_matrix, np.asarray(frequencies)
+=======
+    # Compute the CWT coefficients
+    cwt_matrix, frequencies = pywt.cwt(signal, scales, wavelet)
+    
+    return cwt_matrix, frequencies
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 

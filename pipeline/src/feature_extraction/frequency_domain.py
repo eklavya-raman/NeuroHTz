@@ -54,8 +54,13 @@ def _band_stats(psd: np.ndarray, freqs: np.ndarray, fmin: float, fmax: float) ->
         }
 
     band_psd = psd[:, mask]
+<<<<<<< HEAD
     abs_power_ch = np.trapezoid(band_psd, freqs[mask], axis=1)
     total_power_ch = np.trapezoid(psd, freqs, axis=1) + 1e-12
+=======
+    abs_power_ch = np.trapz(band_psd, freqs[mask], axis=1)
+    total_power_ch = np.trapz(psd, freqs, axis=1) + 1e-12
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
     rel_power_ch = abs_power_ch / total_power_ch
     flat = band_psd.reshape(-1)
 

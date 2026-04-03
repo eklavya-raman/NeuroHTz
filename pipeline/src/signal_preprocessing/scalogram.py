@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from pathlib import Path
 from uuid import uuid4
 
@@ -33,6 +34,15 @@ def _build_perceptual_lut(size: int = 256) -> np.ndarray:
 _SCALOGRAM_LUT = _build_perceptual_lut()
 _MIN_OUTPUT_WIDTH = 960
 _MIN_OUTPUT_HEIGHT = 360
+=======
+from io import BytesIO
+from pathlib import Path
+from uuid import uuid4
+
+import PIL
+import numpy as np
+import matplotlib.pyplot as plt
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 
 
 def _default_scalogram_dir() -> Path:
@@ -53,6 +63,7 @@ def generate_scalogram(
     label: str | None = None,
     figsize: tuple[float, float] = (14, 8),
     dpi: int = 300,
+<<<<<<< HEAD
 ) -> tuple[np.ndarray, str]:
     # Build a fast image directly from normalized coefficients.
     # Keep signature unchanged for compatibility; figsize/dpi/frequencies are accepted but unused.
@@ -113,11 +124,33 @@ def generate_scalogram(
     rgb = _SCALOGRAM_LUT[idx]
 
     image = rgb
+=======
+) -> tuple[PIL.Image.Image, str]:
+    # Normalize the CWT coefficients for better visualization
+    cwt_matrix_normalized = (cwt_matrix - np.min(cwt_matrix)) / (np.max(cwt_matrix) - np.min(cwt_matrix))
+    
+    # Create a scalogram image using matplotlib
+    plt.figure(figsize=figsize, dpi=dpi)
+    plt.imshow(cwt_matrix_normalized, aspect='auto', cmap='jet', origin='lower', interpolation='nearest')
+    plt.colorbar(label='Normalized CWT Coefficients')
+    plt.xlabel('Time')
+    plt.ylabel('Frequency (Hz)')
+    plt.title('Scalogram')
+    
+    # Save to an in-memory buffer and return as PIL image.
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', dpi=dpi, bbox_inches='tight')
+    plt.close()
+    buffer.seek(0)
+    image = PIL.Image.open(buffer).copy()
+    buffer.close()
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 
     # Save image with a unique label into the scalograms directory.
     out_dir = Path(output_dir) if output_dir is not None else _default_scalogram_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
     saved_path = out_dir / _unique_scalogram_name(label)
+<<<<<<< HEAD
     image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     if not cv2.imwrite(str(saved_path), image_bgr):
         raise IOError(f"Failed to write scalogram image to {saved_path}")
@@ -129,5 +162,13 @@ def open_scalogram_image(file_path: str) -> np.ndarray:
     if image_bgr is None:
         raise FileNotFoundError(f"Could not read scalogram image: {file_path}")
     return cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+=======
+    image.save(saved_path, format="PNG")
+
+    return image, str(saved_path)
+
+def open_scalogram_image(file_path: str) -> PIL.Image:
+    return PIL.Image.open(file_path)
+>>>>>>> c440577402fc029764c39a025d1a146cbf8c3176
 
 
